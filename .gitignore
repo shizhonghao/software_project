@@ -1,0 +1,5 @@
+#忽略所有生成的.pyc文件
+*.pyc
+
+#忽略test.py
+test.py

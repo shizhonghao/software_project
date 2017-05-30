@@ -40,6 +40,7 @@ class Ui_MainWindow(object):
         # 这个是槽函数，形式就是： 实体.信号函数名.connect(回调函数名)
         # 如果要使用额外的传参，回调函数写成lambda表达式就可以了
         self.pushButton2.clicked.connect(self.showLogin)
+        self.pushButton2.setText("login")
 
         self.pushButton3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton3.setGeometry(QtCore.QRect(80, 190, 241, 101))
@@ -66,7 +67,14 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "this is the MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "show dialog"))
 
+    def showStatusDisplay(self):
+        # 对接再说，展示界面
+        self.pushButton3.setText('now is StatusDisplay')
+
     def showLogin(self):
         self.widget = M_login.Ui_Form()
+        self.widget._haslogged.connect(self.showStatusDisplay)
         M_login.Ui_Form.setupUi(self.widget, self.centralwidget)
         self.widget.show()
+
+
