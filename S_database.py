@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
 import MySQLdb
-import sys
 import threading
 '''
 主动执行这个文件的话是用sqlToTxt把数据库里面的内容全部抽取到txt里面，
@@ -9,11 +8,10 @@ import threading
 '''
 #多线程访问互斥锁
 db_lock = threading.Lock()
-
 # 打开数据库连接
 db = MySQLdb.connect(host="localhost", port=3306, user="root", password="", db="software_proj", charset="utf8")
 cursor = db.cursor()
-print("连接数据库")
+print("连接数据库S")
 
 '''
             #取出这个商品的对应元组（由于json的限制最多只有5000条所以不会太占内存）

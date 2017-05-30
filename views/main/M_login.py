@@ -6,10 +6,12 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import pyqtSignal, QObject, Qt, pyqtSlot
-from PyQt5.QtWidgets import QWidget,QMessageBox
-from controller.M_LoginController import M_LoginController
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QWidget, QMessageBox
+
+from controller.main.M_LoginController import M_LoginController
+
 
 #这玩意一定要改
 class Ui_Form(QWidget):
