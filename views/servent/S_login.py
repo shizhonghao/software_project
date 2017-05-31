@@ -40,36 +40,35 @@ class Ui_Form(QWidget):
         self.widget.setGeometry(QtCore.QRect(60, 77, 300, 45))
         self.widget.setStyleSheet("background-color: rgba(255, 255, 127, 180);")
         self.widget.setObjectName("widget")
-        #lable_账号
+        #lable_登录名
         self.label_id = QtWidgets.QLabel(self.widget)
-        self.label_id.setGeometry(QtCore.QRect(0, 0, 60, 50))
+        self.label_id.setGeometry(QtCore.QRect(0, 0, 80, 50))
         self.label_id.setStyleSheet("border-right:1px groove  rgb(255, 85, 0);")
         self.label_id.setAlignment(QtCore.Qt.AlignCenter)
         self.label_id.setObjectName("label_id")
-        #input_账号
+        #input_登录名
         self.lineEdit_id = QtWidgets.QLineEdit(self.widget)
-        self.lineEdit_id.setGeometry(QtCore.QRect(60, -1, 241, 52))
+        self.lineEdit_id.setGeometry(QtCore.QRect(80, -1, 241, 52))
         self.lineEdit_id.setStyleSheet("border-color: rgba(255, 255, 255, 0);font: 11pt 'Adobe Hebrew';")
         self.lineEdit_id.setObjectName("lineEdit")
 
 
-        # 输入框-密码
+        # 输入框-身份证号
         self.widget_2 = QtWidgets.QWidget(self.Form)
         self.widget_2.setGeometry(QtCore.QRect(60, 142, 300, 45))
         self.widget_2.setStyleSheet("background-color: rgba(255, 255, 127, 180);")
         self.widget_2.setObjectName("widget_2")
-        # lable_密码
-        self.label_pwd = QtWidgets.QLabel(self.widget_2)
-        self.label_pwd.setGeometry(QtCore.QRect(0, 0, 60, 50))
-        self.label_pwd.setStyleSheet("border-right:1px groove  rgb(255, 85, 0);")
-        self.label_pwd.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_pwd.setObjectName("label_pwd")
-        # input_密码
-        self.lineEdit_pwd = QtWidgets.QLineEdit(self.widget_2)
-        self.lineEdit_pwd.setGeometry(QtCore.QRect(60, -1, 241, 52))
-        self.lineEdit_pwd.setStyleSheet("border-color: rgba(255, 255, 255, 0);font: 11pt 'Adobe Hebrew'")
-        self.lineEdit_pwd.setObjectName("lineEdit_2")
-        self.lineEdit_pwd.setEchoMode(QtWidgets.QLineEdit.Password)
+        # lable_身份证号
+        self.label_card = QtWidgets.QLabel(self.widget_2)
+        self.label_card.setGeometry(QtCore.QRect(0, 0, 80, 50))
+        self.label_card.setStyleSheet("border-right:1px groove  rgb(255, 85, 0);")
+        self.label_card.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_card.setObjectName("label_card")
+        # input_身份证号
+        self.lineEdit_card = QtWidgets.QLineEdit(self.widget_2)
+        self.lineEdit_card.setGeometry(QtCore.QRect(80, -1, 241, 52))
+        self.lineEdit_card.setStyleSheet("border-color: rgba(255, 255, 255, 0);font: 11pt 'Adobe Hebrew'")
+        self.lineEdit_card.setObjectName("lineEdit_2")
 
         #登录按钮
         self.pushButton = QtWidgets.QPushButton(self.Form)
@@ -87,8 +86,8 @@ class Ui_Form(QWidget):
         self.Form.setWindowTitle(_translate("Form", "Form"))
         self.label_id.setText(_translate("Form", "账号"))
         self.pushButton.setText(_translate("Form", "登录"))
-        self.label.setText(_translate("Form", "管理员登录"))
-        self.label_pwd.setText(_translate("Form", "密码"))
+        self.label.setText(_translate("Form", "从机用户登录"))
+        self.label_card.setText(_translate("Form", "身份证号"))
 
     def hide(self):
         self.Form.hide()
@@ -99,13 +98,13 @@ class Ui_Form(QWidget):
 
     #交互请求：登录
     def checkInp(self):
-        #取输入的用户名与密码
+        #取输入的用户名与身份证号
         userName = self.lineEdit_id.text()
-        passwd = self.lineEdit_pwd.text()
+        id_card = self.lineEdit_card.text()
 
         #调用控制器的登录认证函数
         logincontroller = S_LoginController()
-        res ,message= logincontroller.Login(userName,passwd)
+        res ,message= logincontroller.Login(userName,id_card)
 
         #根据认证结果弹窗，执行下一步
         Message = QMessageBox()#一个消息框
@@ -116,7 +115,7 @@ class Ui_Form(QWidget):
             self._haslogged.emit()
         else:
             QMessageBox.information(Message, "Message", message, QMessageBox.Ok)
-            self.lineEdit_pwd.clear()
+            self.lineEdit_card.clear()
 
 
 

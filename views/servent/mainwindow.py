@@ -9,9 +9,20 @@
 from PyQt5 import QtCore, QtWidgets
 
 from views.servent import S_login
+from models.servent import HeartBeat
+import untitled
 
 
 class Ui_MainWindow(object):
+
+    def __init__(self):
+        #每个界面的初始定义，信号连接
+        #由于centralwidget还没有定义，setupUi放到之后在做
+        self.loginUI = S_login.Ui_Form()
+        self.loginUI._haslogged.connect(self.logged)
+
+        self.costUI = untitled.Ui_Form()
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -30,10 +41,16 @@ class Ui_MainWindow(object):
         # 如果要使用额外的传参，回调函数写成lambda表达式就可以了
         self.pushButton2.clicked.connect(self.showLogin)
         self.pushButton2.setText("S_login")
+        S_login.Ui_Form.setupUi(self.loginUI, self.centralwidget)
+        self.loginUI.hide()
+        untitled.Ui_Form.setupUi(self.costUI,self.centralwidget)
+        self.costUI.hide()
+        self.widget=self.costUI
 
         self.pushButton3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton3.setGeometry(QtCore.QRect(80, 190, 241, 101))
         self.pushButton3.setObjectName("pushButton3")
+        self.pushButton3.clicked.connect(self.showCost)
         #这个是槽函数，形式就是： 实体.信号函数名.connect(回调函数名)
         #如果要使用额外的传参，回调函数写成lambda表达式就可以了
 
@@ -59,10 +76,20 @@ class Ui_MainWindow(object):
         # 对接再说，展示界面
         self.pushButton3.setText('now is StatusDisplay')
 
+
+    #登录成功后，创建心跳类，还有传感器！！（因为传感器的时间间隔是恒定的）
+    def logged(self):
+        self.heat = HeartBeat.HeartBeat('pretend this is a servent')
+        self.showStatusDisplay()
+        #self.costUI
+
     def showLogin(self):
-        self.widget = S_login.Ui_Form()
-        self.widget._haslogged.connect(self.showStatusDisplay)
-        S_login.Ui_Form.setupUi(self.widget, self.centralwidget)
+        self.widget.hide()
+        self.widget = self.loginUI
         self.widget.show()
 
+    def showCost(self):
+        self.widget.hide()
+        self.widget = self.costUI
+        self.widget.show()
 

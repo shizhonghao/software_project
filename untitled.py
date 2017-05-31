@@ -35,8 +35,7 @@ class Ui_Form(object):
     def hide(self):
         self.Form.hide()
 
-    def show(self,str):
-        self.label.setText(str)
+    def show(self):
         self.Form.show()
         self.Form.raise_()
 
