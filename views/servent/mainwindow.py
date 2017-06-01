@@ -6,10 +6,23 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-import untitled, M_login
+from PyQt5 import QtCore, QtWidgets
+
+from views.servent import S_login
+from models.servent import HeartBeat
+import untitled
+
 
 class Ui_MainWindow(object):
+
+    def __init__(self):
+        #每个界面的初始定义，信号连接
+        #由于centralwidget还没有定义，setupUi放到之后在做
+        self.loginUI = S_login.Ui_Form()
+        self.loginUI._haslogged.connect(self.logged)
+
+        self.costUI = untitled.Ui_Form()
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -21,32 +34,26 @@ class Ui_MainWindow(object):
         self.label.setGeometry(QtCore.QRect(110, 120, 311, 131))
         self.label.setObjectName("label")
 
-        ##这是一个子界面类！不是一个实际的widget类！要自己重写hide,show方法
-        self.widget = untitled.Ui_Form()
-        #初始化这个创建的子界面类
-        untitled.Ui_Form.setupUi(self.widget,self.centralwidget)
-        self.widget.hide()
-
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(80, 390, 241, 101))
-        self.pushButton.setObjectName("pushButton")
-        #这个是槽函数，形式就是： 实体.信号函数名.connect(回调函数名)
-        #如果要使用额外的传参，回调函数写成lambda表达式就可以了
-        self.pushButton.clicked.connect(lambda:self.widget.show('change it'))
-
         self.pushButton2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton2.setGeometry(QtCore.QRect(80, 290, 241, 101))
         self.pushButton2.setObjectName("pushButton2")
         # 这个是槽函数，形式就是： 实体.信号函数名.connect(回调函数名)
         # 如果要使用额外的传参，回调函数写成lambda表达式就可以了
         self.pushButton2.clicked.connect(self.showLogin)
+        self.pushButton2.setText("S_login")
+        S_login.Ui_Form.setupUi(self.loginUI, self.centralwidget)
+        self.loginUI.hide()
+        untitled.Ui_Form.setupUi(self.costUI,self.centralwidget)
+        self.costUI.hide()
+        self.widget=self.costUI
 
         self.pushButton3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton3.setGeometry(QtCore.QRect(80, 190, 241, 101))
         self.pushButton3.setObjectName("pushButton3")
+        self.pushButton3.clicked.connect(self.showCost)
         #这个是槽函数，形式就是： 实体.信号函数名.connect(回调函数名)
         #如果要使用额外的传参，回调函数写成lambda表达式就可以了
-        self.pushButton3.clicked.connect(lambda:self.widget.show('change it'))
+
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -64,9 +71,25 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "this is the MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "show dialog"))
+
+    def showStatusDisplay(self):
+        # 对接再说，展示界面
+        self.pushButton3.setText('now is StatusDisplay')
+
+
+    #登录成功后，创建心跳类，还有传感器！！（因为传感器的时间间隔是恒定的）
+    def logged(self):
+        self.heat = HeartBeat.HeartBeat('pretend this is a servent')
+        self.showStatusDisplay()
+        #self.costUI
 
     def showLogin(self):
-        self.widget = M_login.Ui_Form()
-        M_login.Ui_Form.setupUi(self.widget, self.centralwidget)
+        self.widget.hide()
+        self.widget = self.loginUI
         self.widget.show()
+
+    def showCost(self):
+        self.widget.hide()
+        self.widget = self.costUI
+        self.widget.show()
+
