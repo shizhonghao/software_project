@@ -18,12 +18,12 @@ class Ui_Form(QWidget):
     #告知主窗口登录完成的信号
     _haslogged = pyqtSignal()
 
-    def setupUi(self,MainWindow):
+    def setupUi(self,parent):
         #继承在主窗口上
-        self.parent = MainWindow
+        self.parent = parent
 
         #子界面上的作画区
-        self.Form = QWidget(MainWindow) #生成在父界面上
+        self.Form = QWidget(parent) #生成在父界面上
         self.Form.setGeometry(QtCore.QRect(140, 240, 400, 250))
         self.Form.setObjectName("Form")
         self.Form.resize(400, 250)

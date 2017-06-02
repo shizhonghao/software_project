@@ -13,7 +13,7 @@ class Sensor:
 
         # 记下作为操作目标的从机状态类
         self.target = servent
-        print('timer set')
+        print('sensor set')
         self.timer.timeout.connect(self.state_update)
 
     def state_update(self):
@@ -23,3 +23,4 @@ class Sensor:
         然后通过self.target的set_temp之类的方法（接口去问）来更新它
         不用操作数据库！
         '''
+        i = 2

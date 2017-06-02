@@ -5,3 +5,5 @@ import time
 from PyQt5.QtCore import *
 from client import c
 #数据表从机状态
+class Servent:
+    __tablename__ = 'servents'

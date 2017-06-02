@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from PyQt5.QtCore import *
 from client import c
+import time
 
 class HeartBeat:
     init_interval = 1000

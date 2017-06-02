@@ -8,8 +8,9 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-from views.servent import S_login
-from models.servent import HeartBeat
+from views.servent import S_login,S_Cost
+from models.servent import HeartBeat,Sensor
+from controller.servent.S_CostController import S_CostController
 import untitled
 
 
@@ -21,7 +22,7 @@ class Ui_MainWindow(object):
         self.loginUI = S_login.Ui_Form()
         self.loginUI._haslogged.connect(self.logged)
 
-        self.costUI = untitled.Ui_Form()
+        self.costUI = S_Cost.Ui_Form()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -43,8 +44,10 @@ class Ui_MainWindow(object):
         self.pushButton2.setText("S_login")
         S_login.Ui_Form.setupUi(self.loginUI, self.centralwidget)
         self.loginUI.hide()
-        untitled.Ui_Form.setupUi(self.costUI,self.centralwidget)
+        self.costUI.setupUi(self.centralwidget)
+
         self.costUI.hide()
+
         self.widget=self.costUI
 
         self.pushButton3 = QtWidgets.QPushButton(self.centralwidget)
@@ -78,9 +81,12 @@ class Ui_MainWindow(object):
 
 
     #登录成功后，创建心跳类，还有传感器！！（因为传感器的时间间隔是恒定的）
+    #可能还要在这里创建从机类。。
     def logged(self):
-        self.heat = HeartBeat.HeartBeat('pretend this is a servent')
+        self.heart = HeartBeat.HeartBeat('pretend this is a servent')
+        self.sensor = Sensor.Sensor('pretend this is a servent')
         self.showStatusDisplay()
+        #self.cost_controller = S_CostController()
         #self.costUI
 
     def showLogin(self):
@@ -93,3 +99,6 @@ class Ui_MainWindow(object):
         self.widget = self.costUI
         self.widget.show()
 
+    #析构的时候中断通信
+    def __del__(self):
+        print("end the communication")

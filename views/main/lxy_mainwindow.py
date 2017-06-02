@@ -10,6 +10,7 @@ from PyQt5 import QtCore, QtWidgets
 
 import untitled
 from views.main import M_login
+from models.main.SubMatch import queue
 
 
 class Ui_MainWindow(object):
