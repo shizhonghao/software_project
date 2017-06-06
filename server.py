@@ -6,6 +6,7 @@ import re
 import math
 import sys
 
+
 class communicate:
     def __init__(self):
         self.HOST, self.PORT = "localhost", 9999
@@ -23,7 +24,9 @@ class communicate:
     def Temp_Submit(self,Time,Client_No,Temp):
         pass
 
-    def Login(self,Name,PassWord,Client_No):
+    def Login(self,Name,Password,Client_No):
+        from models.main.UsrLogin import UsrLogin
+        UsrLogin.Check(UsrLogin(),Client_No,Name,Password)
         pass
 
     #------info processing functions
