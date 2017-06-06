@@ -13,7 +13,7 @@ class S_servent :
         self.sysT = 30
         self.sysW = 1
         self.sysModel = M
-        self.loggedOn = datetime.strptime("2017-06-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+        self.loggedOn = datetime.strptime("2017-06-07 00:00:00", "%Y-%m-%d %H:%M:%S")
         self.eng_cost = 0.00
         self.money_cost = 0.00
         self.start_blowing = 1

@@ -41,26 +41,13 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        # 新建信息显示界面
-        self.boardwidget = Ui_S_Board()
-        self.boardwidget.setupUi(self.centralwidget)
-        self.boardwidget.hide()
-
         # 新建登录界面
         self.loginwidget = Ui_S_Login()
         self.loginwidget.setupUi(self.centralwidget)
         self.loginwidget.show()
         self.loginwidget._haslogged.connect(self.logged)
 
-        # 新建账单显示界面
-        self.costwidget = Ui_S_Cost()
-        self.costwidget.setupUi(self.centralwidget)
-        self.costwidget.hide()
-
-
         # 信号与槽
-        self.InfoShow.clicked.connect(self.infoshow_clk)   #信息展示
-        self.CostShow.clicked.connect(self.costshow_clk)   #账单展示
         self.ShutDown.clicked.connect(self.shutdown_request)   #关机请求
         #关机成功信号，关闭窗口or回到登录界面？
 
@@ -96,9 +83,22 @@ class Ui_MainWindow(object):
         # 初始化一个servent,修改py文件中的单例指向这个实例
         myroom = S_servent(Name,Password,Mode)
         print(myroom.usr)
-        self.heart = HeartBeat.HeartBeat('pretend this is a servent')
-        self.sensor = Sensor.Sensor('pretend this is a servent')
+        self.heart = HeartBeat.HeartBeat(myroom)
+        self.sensor = Sensor.Sensor(myroom)
+        # 新建信息显示界面
+        self.boardwidget = Ui_S_Board()
+        self.boardwidget.setupUi(self.centralwidget,myroom)
+        self.boardwidget.hide()
+
+        # 新建账单显示界面
+        self.costwidget = Ui_S_Cost()
+        self.costwidget.setupUi(self.centralwidget,myroom)
+        self.costwidget.hide()
         self.infoshow_clk()
+
+        # 信号与槽
+        self.InfoShow.clicked.connect(self.infoshow_clk)  # 信息展示
+        self.CostShow.clicked.connect(self.costshow_clk)  # 账单展示
 
     #关机处理
     #def shutdown_ok(self):

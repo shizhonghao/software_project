@@ -15,7 +15,7 @@ from  datetime  import  *
 
 class Ui_S_Board(QtWidgets.QWidget):
     start = QtCore.pyqtSignal()
-    def setupUi(self, parent):
+    def setupUi(self, parent,servent):
         self.S_Board = QtWidgets.QWidget(parent) #生成在父界面上
         self.S_Board.setObjectName("S_Board")
         self.S_Board.resize(600, 450)

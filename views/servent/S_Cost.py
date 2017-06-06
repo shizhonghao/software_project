@@ -12,8 +12,8 @@ from PyQt5.QtWidgets import *
 from controller.servent.S_CostController import S_CostController
 
 class Ui_S_Cost(QWidget):
-    def setupUi(self, parent):
-        self.controller = S_CostController()
+    def setupUi(self, parent,servent):
+        self.controller = S_CostController(servent)
         self.parent = parent
 
         # 子界面上的作画区
@@ -134,8 +134,9 @@ class Ui_S_Cost(QWidget):
         self.timer.stop()
 
     def showCost(self):
-        self.controller.getCost()
-        self.timecost_lcd.display("%02d:%02d:%02d" % (self.controller.hours,
-                                                      self.controller.minitues, self.controller.secs))
+        self.timecost_lcd.display("%02d:%02d:%02d" % (self.controller.getTimeCost()))
+        self.energy_lcd.display("%.2f" % (self.controller.getEngCost()))
+        self.monycost_lcd.display("%.2f" % (self.controller.getMoneyCost()))
+
 
 
