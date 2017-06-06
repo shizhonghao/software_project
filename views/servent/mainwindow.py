@@ -86,8 +86,7 @@ class Ui_MainWindow(object):
         self.heart = HeartBeat.HeartBeat('pretend this is a servent')
         self.sensor = Sensor.Sensor('pretend this is a servent')
         self.showStatusDisplay()
-        #self.cost_controller = S_CostController()
-        #self.costUI
+        #生成从机类
 
     def showLogin(self):
         self.widget.hide()

@@ -11,21 +11,21 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from controller.servent.S_CostController import S_CostController
 
-class Ui_Form(QWidget):
+class Ui_S_Cost(QWidget):
     def setupUi(self, parent):
         self.controller = S_CostController()
         self.parent = parent
 
         # 子界面上的作画区
         self.Form = QWidget(parent)  # 生成在父界面上
-        self.Form.setGeometry(QtCore.QRect(0, 0, 800, 600))
+        self.Form.setGeometry(QtCore.QRect(0,30,800,570))
         self.Form.setObjectName("Form")
-        self.Form.resize(800, 600)
+        self.Form.resize(800, 570)
         self.Form.setStyleSheet("border:3px groove  rgb(85, 255, 127);background-color: rgba(170, 255, 255, 170);")
 
         #################消费结果展示界面￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
         self.displayborad = QtWidgets.QWidget(self.Form)
-        self.displayborad.setGeometry(QtCore.QRect(100, 80, 600, 401))
+        self.displayborad.setGeometry(QtCore.QRect(100, 20, 600, 401))
         self.displayborad.setStyleSheet("border:3px groove  rgb(0, 0, 127);background-color: rgba(85, 85, 255, 160);")
         self.displayborad.setObjectName("displayborad")
         ##时间消费展示
@@ -47,6 +47,7 @@ class Ui_Form(QWidget):
         self.timecost_label.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.timecost_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.timecost_label.setObjectName("timecost_label")
+
         ##金钱消费展示
         self.monycost_display = QtWidgets.QWidget(self.displayborad)
         self.monycost_display.setGeometry(QtCore.QRect(0, 150, 600, 111))
@@ -64,6 +65,8 @@ class Ui_Form(QWidget):
         self.monycost_lcd.setGeometry(QtCore.QRect(270,20,310,81))
         self.monycost_lcd.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.monycost_lcd.setObjectName("monycost_lcd")
+
+
         ##能量消费展示
         self.energe_display = QtWidgets.QWidget(self.displayborad)
         self.energe_display.setGeometry(QtCore.QRect(0, 270, 600, 111))
@@ -84,7 +87,7 @@ class Ui_Form(QWidget):
 
         ######小贴士####################################################
         self.notes = QtWidgets.QWidget(self.Form)
-        self.notes.setGeometry(QtCore.QRect(110, 490, 600, 80))
+        self.notes.setGeometry(QtCore.QRect(110, 430, 600, 80))
         self.notes.setStyleSheet("background-color: rgba(170, 255, 127, 180);")
         self.notes.setObjectName("notes")
         self.label = QtWidgets.QLabel(self.notes)
@@ -97,11 +100,11 @@ class Ui_Form(QWidget):
         self.label.setObjectName("label")
 
 
-        self.closeButton= QtWidgets.QPushButton(self.Form)
-        self.closeButton.setGeometry(QtCore.QRect(740, 20, 40, 40))
+        #self.closeButton= QtWidgets.QPushButton(self.Form)
+        #self.closeButton.setGeometry(QtCore.QRect(740, 20, 40, 40))
         # self.pushButton.setStyleSheet("border-radius:10px;background-color: rgb(255, 255, 255);")
-        self.closeButton.setObjectName("closeButton")
-        self.closeButton.clicked.connect(self.hide)
+        #self.closeButton.setObjectName("closeButton")
+        #self.closeButton.clicked.connect(self.hide)
 
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.Form)

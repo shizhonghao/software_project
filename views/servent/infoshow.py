@@ -8,8 +8,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 #数据类
-from figure import Figure_Canvas
-from SBoardControl import S_BoardController
+from views.servent.figure import Figure_Canvas
+from controller.servent.SBoardControl import S_BoardController
 from  datetime  import  *
 
 

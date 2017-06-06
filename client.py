@@ -5,11 +5,19 @@ import threading
 import xml.dom.minidom as Dom
 import re
 import math
+from PyQt5.QtCore import pyqtSignal,QObject
+from PyQt5.QtWidgets import QWidget
 
-class communicate:
+class communicate(QObject):
+    _haslogged = pyqtSignal(int,str,str,int)
+
     def __init__(self):
+        super().__init__()
+        print("client")
+        #super(QWidget,self).__init__()
+        print("client init")
         self.HOST, self.PORT = "localhost", 9999
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # Connect to server and send data
         self.sock.connect((self.HOST, self.PORT))
 
@@ -34,6 +42,8 @@ class communicate:
         node_Time = doc.createElement("Positive")
 
     def Login(self,Name,Password,Client_No):
+        self._haslogged.emit(1,Name, Password, 1)
+        return
         doc = Dom.Document()
         root = doc.createElement("Login")
 
@@ -52,8 +62,8 @@ class communicate:
         self.send(str(len(root.toxml()) + 1) + root.toxml())
 
     # ------local setting functions
-    def Login_ACK(self,Succeed,Password,Mode):
-        pass
+    def Login_ACK(self,Succeed,Name,Password,Mode):
+        self._haslogged.emit(Succeed,Name,Password,Mode)
 
     def Mode(self,Heater):
         pass

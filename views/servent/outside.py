@@ -7,7 +7,10 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from infoshow import Ui_S_Board
+from views.servent.infoshow import Ui_S_Board
+from views.servent.S_Cost import Ui_S_Cost
+from views.servent.S_login import Ui_S_Login
+from models.servent import HeartBeat,Sensor
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -42,12 +45,16 @@ class Ui_MainWindow(object):
         self.boardwidget.setupUi(self.centralwidget)
         self.boardwidget.hide()
 
-        # 新建账单显示界面
+        # 新建登录界面
+        self.loginwidget = Ui_S_Login()
+        self.loginwidget.setupUi(self.centralwidget)
+        self.loginwidget.show()
+        self.loginwidget._haslogged.connect(self.logged)
 
-        # self.costwidget = QtWidgets.QWidget()
-        # self.tempui = Ui_cost()
-        # self.tempui.setupUi(self.costwidget)
-        # self.costwidget.hide()
+        # 新建账单显示界面
+        self.costwidget = Ui_S_Cost()
+        self.costwidget.setupUi(self.centralwidget)
+        self.costwidget.hide()
 
 
         # 信号与槽
@@ -69,18 +76,27 @@ class Ui_MainWindow(object):
 
     #信息展示
     def infoshow_clk(self):
-        #self.costwidget.hide()
+        self.costwidget.hide()
         self.boardwidget.show()
 
     #账单展示
     def costshow_clk(self):
         self.boardwidget.hide()
-        #self.costwidget.show()
+        self.costwidget.show()
 
     #关机请求
     def shutdown_request(self):
         print("shurdown_request")
         #与主机通信
+
+    # 登录成功后，创建心跳类，还有传感器！！（因为传感器的时间间隔是恒定的）
+    # 可能还要在这里创建从机类。。
+    def logged(self,Name,Password,Mode):
+        # 初始化一个servent
+        #self.servant = servant(Name,Password,Mode)
+        self.heart = HeartBeat.HeartBeat('pretend this is a servent')
+        self.sensor = Sensor.Sensor('pretend this is a servent')
+        self.infoshow_clk()
 
     #关机处理
     #def shutdown_ok(self):
