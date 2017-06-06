@@ -9,21 +9,20 @@
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QMessageBox
-
 from controller.servent.S_LoginController import S_LoginController
 
 
 #这玩意一定要改
-class Ui_Form(QWidget):
+class Ui_S_Login(QWidget):
     #告知主窗口登录完成的信号
-    _haslogged = pyqtSignal()
+    _haslogged = pyqtSignal(str,str,int)
 
-    def setupUi(self,MainWindow):
+    def setupUi(self,parent):
         #继承在主窗口上
-        self.parent = MainWindow
+        self.parent = parent
 
         #子界面上的作画区
-        self.Form = QWidget(MainWindow) #生成在父界面上
+        self.Form = QWidget(parent) #生成在父界面上
         self.Form.setGeometry(QtCore.QRect(140, 240, 400, 250))
         self.Form.setObjectName("Form")
         self.Form.resize(400, 250)
@@ -79,6 +78,8 @@ class Ui_Form(QWidget):
 
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.Form)
+        self.logincontroller = S_LoginController()
+        self.logincontroller._haslogged.connect(self.loginRes)
 
 
     def retranslateUi(self):
@@ -103,18 +104,18 @@ class Ui_Form(QWidget):
         id_card = self.lineEdit_card.text()
 
         #调用控制器的登录认证函数
-        logincontroller = S_LoginController()
-        res ,message= logincontroller.Login(userName,id_card)
+        self.logincontroller.Login(userName,id_card)
 
+    def loginRes(self,res,Name,Password,Mode):
         #根据认证结果弹窗，执行下一步
         Message = QMessageBox()#一个消息框
         #消息框的类型（内置了五种好像）（本体，标题，正文，按键组）
-        if res == True:
-            QMessageBox.information(Message,"Message", message,QMessageBox.Ok)
+        if res == 1:
+            QMessageBox.information(Message,"Message", "登录成功",QMessageBox.Ok)
             self.hide()
-            self._haslogged.emit()
+            self._haslogged.emit(Name,Password,Mode)
         else:
-            QMessageBox.information(Message, "Message", message, QMessageBox.Ok)
+            QMessageBox.information(Message, "Message", "登录失败，请检查输入", QMessageBox.Ok)
             self.lineEdit_card.clear()
 
 

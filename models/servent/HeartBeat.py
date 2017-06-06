@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from PyQt5.QtCore import *
 from client import c
+import time
 
 class HeartBeat:
     init_interval = 1000
@@ -33,10 +34,11 @@ class HeartBeat:
         #转化为datetime格式
         current_time = time.strftime('%Y-%m-%d %H:%M:%S',current_time)
 
-        serverNo = 108
+        serverNo = self.target.roomNo
 
-        current_temp = 25
-        #print(current_time,serverNo,current_temp)
+        current_temp = self.target.sysT
+        print("heart Beat",current_time,serverNo,current_temp)
+        c.Temp_Submit(current_temp,serverNo,current_temp)
         #此处应该要更新下刷新频率
         ''''
         self.init_interval +=1000

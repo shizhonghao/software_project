@@ -3,7 +3,7 @@ from PyQt5.QtCore import *
 
 
 class Sensor:
-    init_interval = 60000#一分钟更新一次还是怎样。。。
+    init_interval = 1000#一分钟更新一次还是怎样。。。
 
     def __init__(self, servent):
         # 定时器
@@ -12,8 +12,8 @@ class Sensor:
         self.timer.start()
 
         # 记下作为操作目标的从机状态类
-        self.target = servent
-        print('timer set')
+        self.servent = servent
+        print('sensor set')
         self.timer.timeout.connect(self.state_update)
 
     def state_update(self):
@@ -23,3 +23,7 @@ class Sensor:
         然后通过self.target的set_temp之类的方法（接口去问）来更新它
         不用操作数据库！
         '''
+        if(self.servent.sysT ==30):
+            self.servent.sysT = 24
+        else:
+            self.servent.sysT +=1
