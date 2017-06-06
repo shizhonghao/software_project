@@ -11,6 +11,7 @@ from views.servent.infoshow import Ui_S_Board
 from views.servent.S_Cost import Ui_S_Cost
 from views.servent.S_login import Ui_S_Login
 from models.servent import HeartBeat,Sensor
+from models.servent.servent import S_servent,myroom
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -92,8 +93,9 @@ class Ui_MainWindow(object):
     # 登录成功后，创建心跳类，还有传感器！！（因为传感器的时间间隔是恒定的）
     # 可能还要在这里创建从机类。。
     def logged(self,Name,Password,Mode):
-        # 初始化一个servent
-        #self.servant = servant(Name,Password,Mode)
+        # 初始化一个servent,修改py文件中的单例指向这个实例
+        myroom = S_servent(Name,Password,Mode)
+        print(myroom.usr)
         self.heart = HeartBeat.HeartBeat('pretend this is a servent')
         self.sensor = Sensor.Sensor('pretend this is a servent')
         self.infoshow_clk()
