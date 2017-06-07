@@ -5,6 +5,7 @@ import xml.dom.minidom as Dom
 import re
 import math
 import sys
+from models.main.UserRecord import UserRecord
 
 
 class communicate:
@@ -15,6 +16,8 @@ class communicate:
         self.soc.listen(10) #max number of clients listening to
         self.socket_list = []
         self.room_dict = {}
+        self.log = UserRecord()
+        self.log.log_sig.connect(self.Login_ACK)
 
     #------local setting functions
     def AC_Req(self,Positive,Wind_Level):
@@ -24,13 +27,14 @@ class communicate:
     def Temp_Submit(self,Time,Client_No,Temp):
         pass
 
-    def Login(self,Name,Password,Client_No):
-        from models.main.UsrLogin import UsrLogin
-        UsrLogin.Check(UsrLogin(),Client_No,Name,Password)
+    def Login(self,Name,Password,Client_No,conn,addr):
+        self.room_dict[Client_No] = (conn,addr)
+        print(Client_No,"in dict")
+        self.log.Check(Client_No,Name,Password)
         pass
 
     #------info processing functions
-    def parse(self,xml):
+    def parse(self,xml,conn,addr):
         root = Dom.parseString(xml).documentElement
         #print(root.nodeName)
         if(root.nodeName == "AC_Req"):
@@ -55,7 +59,7 @@ class communicate:
             node = root.getElementsByTagName("Client_No")
             Client_No = node[0].childNodes[0].data
 
-            self.Login(Name,Password,Client_No);
+            self.Login(Name,Password,Client_No,conn,addr);
 
     def recv(self,data,conn,addr):
         print("process:",data)
@@ -66,17 +70,20 @@ class communicate:
             head_len = int(math.log(xml_len,10))+1
             xml = data[head_len:head_len+xml_len]
             print("xml:",xml)
-            self.parse(xml)
-            data = data[1+head_len+xml_len:]
+            self.parse(xml,conn,addr)
+            data = data[1+head_len+xml_len:].lstrip()
             print("data:",data)
 
     def send(self,no,info):  # no can be a room number or a socket(before Login_ACK)
-        if type(no) == int:  # no is a room number
+        if type(no) == int:
+            no = str(no)
+
+        if type(no) == str:  # no is a room number
             try:
-                sock = self.room_dict[no]
+                sock = self.room_dict[no][0]
                 sock.sendall(bytes(info + "\n", "utf-8"))
             except:
-                print(no,"is not connected")
+                print(no,"is not connected",sys.exc_info())
         else:  # no is a socket
             try:
                 sock = no
@@ -95,6 +102,7 @@ class communicate:
 
     #------message sending functions
     def Login_ACK(self,no,Succeed,Name,Password,Mode):
+        print(no,Succeed,Name,Password,Mode)
         doc = Dom.Document()
         root = doc.createElement("Login_ACK")
 
