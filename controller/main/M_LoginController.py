@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from models.main import Administrator
+from models.main.Administrator import Administrator
 class M_LoginController:
     def Login(self,id,pwd):
         if len(id)==0:

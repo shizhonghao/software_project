@@ -65,7 +65,7 @@ class Ui_S_Cost(QWidget):
         self.monycost_lcd.setGeometry(QtCore.QRect(270,20,310,81))
         self.monycost_lcd.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.monycost_lcd.setObjectName("monycost_lcd")
-
+        self.timecost_lcd.setDigitCount(10)
 
         ##能量消费展示
         self.energe_display = QtWidgets.QWidget(self.displayborad)
@@ -84,6 +84,7 @@ class Ui_S_Cost(QWidget):
         self.energy_lcd.setGeometry(QtCore.QRect(270,20,310,81))
         self.energy_lcd.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.energy_lcd.setObjectName("energy_lcd")
+        self.timecost_lcd.setDigitCount(10)
 
         ######小贴士####################################################
         self.notes = QtWidgets.QWidget(self.Form)
