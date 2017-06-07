@@ -7,20 +7,20 @@ myroom = object
 
 class S_servent :
     def __init__(self,U,P,M):
-        self.roomNo = 826
-        self.targetT = 27
-        self.targetW = 1
-        self.sysT = 30
-        self.sysW = 1
+        self.roomNo = 826  #这个地方的默认数据记得修改呀！！！！
+        self.targetT = 28.0
+        self.targetW = 2
+        self.sysT = 18.0
+        self.sysW = 2
         self.sysModel = M
-        self.loggedOn = datetime.strptime("2017-06-07 00:00:00", "%Y-%m-%d %H:%M:%S")
+        self.loggedOn = datetime.now()
         self.eng_cost = 0.00
         self.money_cost = 0.00
         self.start_blowing = 1
 
         self.usr = U
         self.pwd = P
-        self.insert_deal(self.roomNo, self.loggedOn, self.usr, self.pwd, self.targetT, self.targetW, self.sysT, self.sysW, self.sysModel, self.eng_cost, self.money_cost)
+        self.insert_deal(self.roomNo, self.loggedOn, self.usr, self.pwd, self.targetT, self.targetW, self.sysT, self.sysW, self.sysModel, self.eng_cost, self.money_cost, self.start_blowing)
         print("out")
 
     #更新修改当前的系统信息
@@ -36,14 +36,14 @@ class S_servent :
         self.updatecost_deal(self.roomNo, self.loggedOn, EC, MC)                #数据库同步修改
 
     def update_rt(self,sT): #实时温度心跳包
+        print("更新实时温度-数据类")
         self.sysT=sT
         self.updatert_deal(self.roomNo, self.loggedOn, sT)
 
-    def update_rw(self,sW):
+    def update_rw(self,sW,sb):
         self.sysW=sW
+        self.start_blowing=sb
         self.updaterw_deal(self.roomNo, self.loggedOn, sW)
-
-
 
     def ret_current_state(self):
         return self.roomNo, self.targetT, self.targetW, self.sysT, self.sysW, self.sysModel, self.loggedOn, self.eng_cost, self.money_cost, self.start_blowing
@@ -52,15 +52,16 @@ class S_servent :
     def insert_dbinfo(self):
         self.insert_deal()
 
-    def insert_deal(self,roomNo, loggedOn, usr, pwd, targetT, targetW, sysT, sysW, sysModel, eng_cost, money_cost):
-        sql = "insert into clientinfo values (%d, '%s', '%s', '%s', %d, %d, %d, %d, %d, %f, %f)" % \
-              (roomNo, loggedOn, usr, pwd, targetT, targetW, sysT, sysW, sysModel, eng_cost, money_cost)
+    def insert_deal(self,roomNo, loggedOn, usr, pwd, targetT, targetW, sysT, sysW, sysModel, eng_cost, money_cost, start_blowing):
+        sql = "insert into clientinfo values (%d, '%s', '%s', '%s', %f, %d, %f, %d, %d, %f, %f, %d)" % \
+              (roomNo, loggedOn, usr, pwd, targetT, targetW, sysT, sysW, sysModel, eng_cost, money_cost,start_blowing)
         db_lock.acquire()
         cursor.execute(sql)
         db.commit()
         db_lock.release()
 
-    def updatecost_deal(self,roomNo, loggedOn, EC, MC):
+    def updatecost_deal(self, roomNo, loggedOn, EC, MC):
+        print("账单-更改数据库")
         sql = "update clientinfo set eng_cost = %f, money_cost = %f where roomNo = %d and loggedOn = %s" % (
         EC, MC, roomNo, loggedOn)
         db_lock.acquire()
@@ -69,22 +70,25 @@ class S_servent :
         db_lock.release()
 
     def updatesys_deal(self,roomNo, loggedOn, T, W, M):
-        sql = "update clientinfo set targetT = %d, targetW = %d, sysModel = %d where roomNo = %d and loggedOn = %s" % (
+        print("设置-更改数据库")
+        sql = "update clientinfo set targetT = %f, targetW = %d, sysModel = %d where roomNo = %d and loggedOn = '%s'" % (
         T, W, M, roomNo, loggedOn)
         db_lock.acquire()
         cursor.execute(sql)
         db.commit()
         db_lock.release()
+        print("设置-更改数据库完成")
 
-    def updatert_deal(roomNo, loggedOn, T):
-        sql = "update clientinfo set sysT=%d where where roomNo = %d and loggedOn = %s" % (T, roomNo, loggedOn)
+    def updatert_deal(self, roomNo , loggedOn , T):
+        print("温度-修改数据库")
+        sql = "update clientinfo set sysT=%f where roomNo = %d and loggedOn = '%s'" % (T, roomNo, loggedOn)
         db_lock.acquire()
         cursor.execute(sql)
         db.commit()
         db_lock.release()
 
-    def updaterw_deal(self,roomNo, loggedOn, W):
-        sql = "update clientinfo set sysW=%d where where roomNo = %d and loggedOn = %s" % (W, roomNo, loggedOn)
+    def updaterw_deal(self,roomNo, loggedOn, W, sb):
+        sql = "update clientinfo set sysW=%d, start_blowing=%d where roomNo = %d and loggedOn = %s" % (W, sb, roomNo, loggedOn)
         db_lock.acquire()
         cursor.execute(sql)
         db.commit()
