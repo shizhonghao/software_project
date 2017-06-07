@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from models.main.SubMatch import queue,SubMatch
+from models.main.SubMatch import queue,SubMatch,que_lock
 from server import server
-import threading
 from PyQt5.QtCore import *
 from operator import itemgetter
 
-que_lock = threading.Lock()
+
 class Algorithm:
     ##轮转算法用：定时器、时间片大小、起点
     RRtimer = QTimer()
@@ -112,9 +111,18 @@ class Algorithm:
     def activate(self):
         if self.algorithm == 1:
             if self.is_RR == True:#RR算法不同于其他，不需要反复激活
-                continue
+                return
             else:
                 self.is_RR = True
+                self.startRR()
+        else:
+            if self.is_RR == True:#RR算法不同于其他，不需要反复激活
+                self.stopRR()
+                self.is_RR = False
+            if self.algorithm == 2:
+                self.Priority()
+            else:
+                self.FIFS()
 
 
 currentAlgorithm = Algorithm()

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from M_database import cursor,db_lock,db
 import datetime
-
+import threading
+que_lock = threading.Lock()
 queue=[]
 RoomNolist=[]
 AliveRoomNolist=[]
@@ -17,8 +18,11 @@ class SubMatch:
         self.isalive=0
         self.cost=0.00
         self.energy=0.00
+        que_lock.acquire()
         queue.append(self)
+        que_lock.release()
         self.insertItem()
+
     #########向数据库里插入需要的从机信息############
     def insertItem(self):
         sql="select room_no,date from servent_stat where room_no='%d' and date=curdate()"
@@ -103,10 +107,11 @@ class SubMatch:
         return list
 
     def deleteItem(self,roomno):
+        que_lock.acquire()
         for x in queue:
             if x.RoomNo==roomno:
                 queue.remove(x)
-
+        que_lock.release
 ''''
 #######从数据表找到从机号######
 def getRoomNo():
