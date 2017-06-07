@@ -81,6 +81,8 @@ class Ui_Form(QWidget):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.Form)
 
+        self.logincontroller = M_LoginController()
+
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -104,8 +106,8 @@ class Ui_Form(QWidget):
         passwd = self.lineEdit_pwd.text()
 
         #调用控制器的登录认证函数
-        logincontroller = M_LoginController()
-        res ,message= logincontroller.Login(userName,passwd)
+
+        res ,message= self.logincontroller.Login(userName,passwd)
 
         #根据认证结果弹窗，执行下一步
         Message = QMessageBox()#一个消息框

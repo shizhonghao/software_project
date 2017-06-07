@@ -5,7 +5,7 @@ class Administrator:
 
     def select(self,id,pwd):
         sql = "SELECT * FROM " +self.__tablename__+" WHERE id='%s' and pwd='%s'" %(id,pwd)
-
+        print(sql)
         # 互斥访问，预防并发访问时游标被占用，结果出错
         db_lock.acquire()
         cursor.execute(sql)
