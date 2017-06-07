@@ -41,7 +41,7 @@ class communicate(QObject):
 
         node_Time = doc.createElement("Time")
         node_Time.appendChild(doc.createTextNode(str(Time)))
-(        root.appendChild(node_Time)
+        root.appendChild(node_Time)
 
         node_CNO = doc.createElement("Client_No")
         node_CNO.appendChild(doc.createTextNode(str(Client_No)))
