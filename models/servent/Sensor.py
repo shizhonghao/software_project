@@ -40,5 +40,6 @@ class Sensor:
             self.wind_temp = 30
             self.extern_temp = 15
         #温度向外温靠近+向风温靠近（4倍风速比率补正）
-        self.servent.sysT = self.servent.sysT + 4*self.rate*self.wind_lv*(self.wind_temp-self.servent.sysT) + \
-                            self.rate*(self.servent.sysT-self.extern_temp)
+        sT = self.servent.sysT + 4*self.rate*self.wind_lv*(self.wind_temp-self.servent.sysT) + \
+                            self.rate*(self.extern_temp-self.servent.sysT)
+        self.servent.update_rt(sT)
