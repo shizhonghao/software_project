@@ -13,10 +13,11 @@ from controller.main import M_StatusController
 class Ui_StatusDisplay(object):
     mtemp=0.00
     mvelocity=0
-    mstatus=M_StatusController.StatusController()
+    controller=M_StatusController.StatusController()
     mfreq=0
     mstrat=0
     mconnec=[]
+    mstatus=""
 
     def setupUi(self, MainWindow):
         self.StatusDisplay=QWidget(MainWindow)
@@ -49,6 +50,9 @@ class Ui_StatusDisplay(object):
         self.label_3 = QtWidgets.QLabel(self.statusWidget)
         self.label_3.setGeometry(QtCore.QRect(20, 360, 81, 18))
         self.label_3.setObjectName("label_3")
+        self.statuLabel = QtWidgets.QLabel(self.statusWidget)
+        self.statuLabel.setGeometry(QtCore.QRect(130, 360, 81, 18))
+        self.statuLabel.setObjectName("statuLabel")
 
         self.roomWidget = QtWidgets.QWidget(self.StatusDisplay)
         self.roomWidget.setGeometry(QtCore.QRect(540, 40, 391, 200))
@@ -102,16 +106,16 @@ class Ui_StatusDisplay(object):
 
     def on_tellmeButton_clicked(self):
         if (self.radioButton.isChecked()):
-            self.mstatus.strat=1
+            self.controller.strat=1
         if (self.radioButton_2.isChecked()):
-            self.mstatus.strat=2
+            self.controller.strat=2
         if (self.radioButton_3.isChecked()):
-            self.mstatus.strat=3
-        self.mstatus.changeStrat()
+            self.controller.strat=3
+        self.controller.changeStrat()
 
     def freqChanged(self):
-        self.mstatus.freq=self.freqSpinbox.value()
-        self.mstatus.changeFreq()
+        self.controller.freq=self.freqSpinbox.value()
+        self.controller.changeFreq()
 
 
     def retranslateUi(self, StatusDisplay):
@@ -129,13 +133,25 @@ class Ui_StatusDisplay(object):
 
     def showMes(self):
         del self.mconnec[:]
-        self.mstatus.getFreq()
-        self.mstatus.getStrat()
+        self.controller.getFreq()
+        self.controller.getStrat()
+        if(self.controller.getStatu()==0):
+            self.mtemp=22.0
+            self.mstatus="制冷"
+        else:
+            self.mtemp=28.0
+            self.mstatus="制热"
 
-        self.tempLabel.setNum(self.mtemp)
-        self.veloLabel.setNum(self.mvelocity)
+        self.tempLabel.setText(str(self.mtemp)+'℃')
+        if self.mvelocity==0:
+            self.veloLabel.setText("低速")
+        elif self.mvelocity==1:
+            self.veloLabel.setText("中速")
+        elif self.mvelocity==2:
+            self.veloLabel.setText("高速")
+        self.statuLabel.setText(self.mstatus)
 
-        list=self.mstatus.getConnec()
+        list=self.controller.getConnec()
         print("slslslslsl")
         print(list)
         x=0
@@ -149,19 +165,19 @@ class Ui_StatusDisplay(object):
         #####刷新测试
         #self.roomLabel.setNum(time.clock())
 
-        if self.mstatus.strat==1:
+        if self.controller.strat==1:
             self.radioButton.setChecked(True)
             self.radioButton_2.setChecked(False)
             self.radioButton_3.setChecked(False)
-        elif self.mstatus.strat==2:
+        elif self.controller.strat==2:
             self.radioButton.setChecked(False)
             self.radioButton_2.setChecked(True)
             self.radioButton_3.setChecked(False)
-        elif self.mstatus.strat==3:
+        elif self.controller.strat==3:
             self.radioButton.setChecked(False)
             self.radioButton_2.setChecked(True)
             self.radioButton_3.setChecked(False)
 
-        self.freqSpinbox.setValue(self.mstatus.freq)
+        self.freqSpinbox.setValue(self.controller.freq)
 
 
