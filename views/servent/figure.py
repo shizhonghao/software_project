@@ -28,10 +28,10 @@ class Figure_Canvas(FigureCanvas):   # 通过继承FigureCanvas类，使得该�
         self.axes.set_xlabel('time')
         self.axes.set_ylabel('temperature')
 
-        self.syst = [22]
-        self.tart = [30]
+        self.syst = []
+        self.tart = []
         self.x = [0,1,2,3,4,5,6,7,8,9,10]
-        self.cnt = 1
+        self.cnt = 0
 
         self.line1, = self.axes.plot([], [],'b-', label = "实时温度")
         self.line2, = self.axes.plot([], [],'r-', label = "目标温度")

@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget
 
 class communicate(QObject):
     _haslogged = pyqtSignal(int,str,str,int)
-
+    wind_change_ac = pyqtSignal(int,int)
     def __init__(self):
         super().__init__()
         print("client")
@@ -80,6 +80,7 @@ class communicate(QObject):
         pass
 
     def Wind(self,Level,Start_Blowing):
+        self.wind_change_ac.emit(int(Level),int(Start_Blowing))
         pass
 
     def Fare_Info(self,Fare,Energy):
