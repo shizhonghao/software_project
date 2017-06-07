@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget
 
 class communicate(QObject):
     _haslogged = pyqtSignal(int,str,str,int)
-
+    wind_change_ac = pyqtSignal(int,int)
     def __init__(self):
         super().__init__()
         print("client")
@@ -54,7 +54,8 @@ class communicate(QObject):
         self.send(str(len(root.toxml()) + 1) + root.toxml())
 
     def Login(self,Name,Password,Client_No):
-        #self._haslogged.emit(1,Name, Password, 1)
+        self._haslogged.emit(1,Name, Password, 1)
+        return
         doc = Dom.Document()
         root = doc.createElement("Login")
 
@@ -74,12 +75,13 @@ class communicate(QObject):
 
     # ------local setting functions
     def Login_ACK(self,Succeed,Name,Password,Mode):
-        self._haslogged.emit(int(Succeed),Name,Password,int(Mode))
+        self._haslogged.emit(Succeed,Name,Password,Mode)
 
     def Mode(self,Heater):
         pass
 
     def Wind(self,Level,Start_Blowing):
+        self.wind_change_ac.emit(int(Level),int(Start_Blowing))
         pass
 
     def Fare_Info(self,Fare,Energy):
