@@ -39,7 +39,19 @@ class communicate(QObject):
         doc = Dom.Document()
         root = doc.createElement("Temp_Submit")
 
-        node_Time = doc.createElement("Positive")
+        node_Time = doc.createElement("Time")
+        node_Time.appendChild(doc.createTextNode(str(Time)))
+        root.appendChild(node_Time)
+
+        node_CNO = doc.createElement("Client_No")
+        node_CNO.appendChild(doc.createTextNode(str(Client_No)))
+        root.appendChild(node_CNO)
+
+        node_Temp = doc.createElement("Temp")
+        node_Temp.appendChild(doc.createTextNode(str(Temp)))
+        root.appendChild(node_Temp)
+
+        self.send(str(len(root.toxml()) + 1) + root.toxml())
 
     def Login(self,Name,Password,Client_No):
         self._haslogged.emit(1,Name, Password, 1)
