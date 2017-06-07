@@ -96,6 +96,7 @@ class Ui_SubMonitor(object):
         self.labeltest.setText(_translate("SubMonitor", "监视界面"))
    ########刷新数据#########
     def updateData(self):
+        del self.messagelist[:]
         x = self.stack.count()
         print("xxxxxxx", x)
         if (x != 0):

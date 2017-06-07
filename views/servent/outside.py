@@ -11,7 +11,7 @@ from views.servent.infoshow import Ui_S_Board
 from views.servent.S_Cost import Ui_S_Cost
 from views.servent.S_login import Ui_S_Login
 from models.servent import HeartBeat,Sensor
-from models.servent.servent import S_servent,myroom
+from models.servent.Servent import S_servent,myroom
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

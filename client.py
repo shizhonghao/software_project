@@ -54,8 +54,7 @@ class communicate(QObject):
         self.send(str(len(root.toxml()) + 1) + root.toxml())
 
     def Login(self,Name,Password,Client_No):
-        self._haslogged.emit(1,Name, Password, 1)
-        return
+        #self._haslogged.emit(1,Name, Password, 1)
         doc = Dom.Document()
         root = doc.createElement("Login")
 
@@ -75,7 +74,7 @@ class communicate(QObject):
 
     # ------local setting functions
     def Login_ACK(self,Succeed,Name,Password,Mode):
-        self._haslogged.emit(Succeed,Name,Password,Mode)
+        self._haslogged.emit(int(Succeed),Name,Password,int(Mode))
 
     def Mode(self,Heater):
         pass

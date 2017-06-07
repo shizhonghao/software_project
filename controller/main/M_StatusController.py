@@ -24,3 +24,6 @@ class StatusController:
     def getStrat(self):
         self.strat=self.new.getStrat()
 
+    def getStatu(self):
+        return self.new.getStatu()
+
