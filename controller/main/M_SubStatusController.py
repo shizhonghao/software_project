@@ -6,13 +6,8 @@ class SubStatuController:
         self.messagelist=[]
 
     def showSub(self):
-        del self.messagelist[:]
-        x=0
-        SubMatch.setAllservent()
-        while x<len(SubMatch.queue):
-            self.messagelist.append(SubMatch.queue[x].getSub())
-            print(self.messagelist[x])
-            x+=1
+        for x in SubMatch.queue:
+            self.messagelist.append(x.getSub())
         print("qqqqqqqq")
         print(self.messagelist)
         return self.messagelist
