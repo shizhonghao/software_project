@@ -24,7 +24,7 @@ class Sensor:
         不用操作数据库！
         '''
         #风速比率
-        if(self.servent.sysW==0):
+        if(self.servent.start_blowing==0):
             self.wind_lv = 0
         elif(self.servent.sysW==1):
             self.wind_lv = 0.8
@@ -35,9 +35,9 @@ class Sensor:
         #根据模式假定风温外温
         if (self.servent.sysModel == 0):
             self.wind_temp = 15
-            self.extern_temp = 30
+            self.extern_temp = 35
         elif (self.servent.sysModel == 1):
-            self.wind_temp = 30
+            self.wind_temp = 35
             self.extern_temp = 15
         #温度向外温靠近+向风温靠近（4倍风速比率补正）
         sT = self.servent.sysT + 4*self.rate*self.wind_lv*(self.wind_temp-self.servent.sysT) + \
