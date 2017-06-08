@@ -2,7 +2,7 @@
 from M_database import cursor, db_lock
 from server import server
 import datetime,time
-
+cur_model = 0
 class ControlPanel:
     curmonth = int(time.strftime("%m", time.localtime()))
     def __init__(self):
@@ -16,8 +16,10 @@ class ControlPanel:
     def setStatu(self):
         if (self.curmonth>=5 and self.curmonth<=10):
             self.statu=0
+            cur_model = 0
         else:
             self.statu=1
+            cur_model = 1
 ##########设置在线从机号#####
     def setConnec(self):
         sql = "select room_no from connection where is_alive=1"

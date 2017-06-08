@@ -7,7 +7,7 @@ myroom = object
 
 class S_servent :
     def __init__(self,U,P,M):
-        self.roomNo = 826  #这个地方的默认数据记得修改呀！！！！
+        self.roomNo = 105  #这个地方的默认数据记得修改呀！！！！
         self.targetT = 28.0
         self.targetW = 2
         self.sysT = 18.0

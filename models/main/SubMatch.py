@@ -2,20 +2,26 @@
 from M_database import cursor,db_lock,db
 import datetime
 import threading
+from models.main.ControlPanel import cur_model
+from PyQt5.QtCore import pyqtSignal,QObject
+from server import server
 que_lock = threading.Lock()
 queue=[]
 RoomNolist=[]
 AliveRoomNolist=[]
 
 class SubMatch:
-    def __init__(self):
+    def __init__(self,roomNo):
         self.ID=""
         self.status=False
         self.switchcnt=0
-        self.temp=0.00
+        if cur_model == 0:
+            self.temp = 28.00
+        else:
+            self.temp = 22.00
         self.velocity=0
-        self.RoomNo=0
-        self.isalive=0
+        self.RoomNo=roomNo
+        self.isalive=1
         self.cost=0.00
         self.energy=0.00
         que_lock.acquire()
@@ -25,25 +31,31 @@ class SubMatch:
 
     #########向数据库里插入需要的从机信息############
     def insertItem(self):
-        sql="select room_no,date from servent_stat where room_no='%d' and date=curdate()"
         data = self.RoomNo
+        sql="select room_no,switch_cnt from servent_stat where room_no=%d and date=CURRENT_DATE " % data
         # 互斥访问，预防并发访问时游标被占用，结果出错
+        print("database??",sql)
         db_lock.acquire()
-        cursor.execute(sql % data)
-        if len(cursor.fetchall())==0:
+        cursor.execute(sql)
+        res = cursor.fetchall()
+        print(res)
+        if len(res)==0:
             now=datetime.datetime.now().strftime('%Y-%m-%d')
             sql = "insert into servent_stat values (%d,%d,%f,%d,%f,%f,'%s')"
             data=(self.RoomNo,self.switchcnt,self.temp,self.velocity,self.cost,self.energy,now)
-            # 互斥访问，预防并发访问时游标被占用，结果出错
-            db_lock.acquire()
             cursor.execute(sql % data)
-            db_lock.release()  # 释放锁
             db.commit()
             print("插入数据")
+        else:
+            #已存在，由于从机被重新初始化，除了开机次数和房间号、日期、消费，剩下字段都更新
+            self.switchcnt = res[0][1]
+            sql = "update servent_stat set wind_level=%d,temp=%f where room_no='%d' and date=curdate()"\
+                  %(self.velocity,self.temp,self.RoomNo)
+            cursor.execute(sql)
+            db.commit()
+            print("更新数据")
         db_lock.release()  # 释放锁
 
-    def setRoomno(self,roomno):
-        self.RoomNo=roomno
     ###########根据从机号从connection表里找到对应的用户名和工作状态，输出二元组列表#########
     def setID(self):
         sql = "SELECT name,is_alive FROM connection where room_no='%d'"
@@ -79,6 +91,32 @@ class SubMatch:
                 print(row)
             db_lock.release()  # 释放锁
 
+    ################根据从机号和当前日期从从机状态表里找到对应的行修改其温度，和实例本身的温度########
+    def setTemp(self,temp):
+        self.temp = temp
+        # 互斥访问，预防并发访问时游标被占用，结果出错
+        print("change temp of room %d"%(self.RoomNo))
+        db_lock.acquire()
+        sql = "update servent_stat set temp=%f where room_no='%d' and date=curdate()" \
+              % (self.temp, self.RoomNo)
+        cursor.execute(sql)
+        db.commit()
+        db_lock.release()  # 释放锁
+        print("change temp of room %d, complete" % (self.RoomNo))
+
+    ################根据从机号和当前日期从从机状态表里找到对应的行修改其风速，和实例本身的风速########
+    def setWindLev(self, velocity):
+        self.velocity = velocity
+        # 互斥访问，预防并发访问时游标被占用，结果出错
+        print("change velocity of room %d" % (self.RoomNo))
+        db_lock.acquire()
+        sql = "update servent_stat set wind_level=%d where room_no='%d' and date=curdate()" \
+              % (self.velocity, self.RoomNo)
+        cursor.execute(sql)
+        db.commit()
+        db_lock.release()  # 释放锁
+        print("change velocity of room %d complete" % (self.RoomNo))
+
   ################根据从机号和当前日期从从机状态表里找到对应的花销消耗，输出二元组列表，不存活的就弄成0########
     def setCost(self):
         if self.isalive == 0:
@@ -106,12 +144,47 @@ class SubMatch:
         print(list)
         return list
 
+class queueMaintance(QObject):
+    def __init__(self):
+        super().__init__()
+
+    #########从机上行心跳包更新某个从机
+    def update_temp(self,roomNo,temp):
+        print("to change temp of room%d"%(roomNo))
+        que_lock.acquire()
+        #找到要修改的从机
+        for one in queue:
+            if(one.RoomNo == roomNo):
+                one.setTemp(temp)
+                break
+        que_lock.release()
+
+    #温控请求对从机实例的风速修改
+    def update_windLev(self,roomNo,windLev):
+        que_lock.acquire()
+        #找到要修改的从机
+        for one in queue:
+            if(one.RoomNo == roomNo):
+                one.setWindLev(windLev)
+                break
+        que_lock.release()
+
     def deleteItem(self,roomno):
         que_lock.acquire()
         for x in queue:
             if x.RoomNo==roomno:
                 queue.remove(x)
-        que_lock.release
+        que_lock.release()
+
+    #登陆后创建一个新的从机实例
+    def newServent(self,roomNo):
+        print("创建一个新从机")
+        SubMatch(roomNo)
+
+
+queueMain = queueMaintance()
+server._updateTemp.connect(queueMain.update_temp)
+server._newServent.connect(queueMain.newServent)
 ''''
 #######从数据表找到从机号######
 def getRoomNo():
