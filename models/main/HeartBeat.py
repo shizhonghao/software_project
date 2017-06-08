@@ -2,7 +2,7 @@
 from PyQt5.QtCore import *
 from server import server
 import time
-from models.main.SubMatch import queue#使用中的从机队列
+from models.main.SubMatch import queue,que_lock#使用中的从机队列
 from M_database import cursor,db_lock
 #主机心跳包，定时向从机们发送消息
 class HeartBeat:
