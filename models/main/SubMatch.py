@@ -3,6 +3,8 @@ from M_database import cursor,db_lock,db
 import datetime
 import threading
 from models.main.ControlPanel import cur_model
+from PyQt5.QtCore import pyqtSignal,QObject
+from server import server
 que_lock = threading.Lock()
 queue=[]
 RoomNolist=[]
@@ -25,18 +27,18 @@ class SubMatch:
         que_lock.acquire()
         queue.append(self)
         que_lock.release()
-        print(queue)
         self.insertItem()
 
     #########向数据库里插入需要的从机信息############
     def insertItem(self):
-        sql="select room_no,date from servent_stat where room_no='%d' and date=curdate()"
         data = self.RoomNo
+        sql="select room_no,switch_cnt from servent_stat where room_no=%d and date=CURRENT_DATE " % data
         # 互斥访问，预防并发访问时游标被占用，结果出错
+        print("database??",sql)
         db_lock.acquire()
-        cursor.execute(sql % data)
+        cursor.execute(sql)
         res = cursor.fetchall()
-        print(res,len(res))
+        print(res)
         if len(res)==0:
             now=datetime.datetime.now().strftime('%Y-%m-%d')
             sql = "insert into servent_stat values (%d,%d,%f,%d,%f,%f,'%s')"
@@ -142,6 +144,31 @@ class SubMatch:
         print(list)
         return list
 
+class queueMaintance(QObject):
+    def __init__(self):
+        super().__init__()
+
+    #########从机上行心跳包更新某个从机
+    def update_temp(self,roomNo,temp):
+        print("to change temp of room%d"%(roomNo))
+        que_lock.acquire()
+        #找到要修改的从机
+        for one in queue:
+            if(one.RoomNo == roomNo):
+                one.setTemp(temp)
+                break
+        que_lock.release()
+
+    #温控请求对从机实例的风速修改
+    def update_windLev(self,roomNo,windLev):
+        que_lock.acquire()
+        #找到要修改的从机
+        for one in queue:
+            if(one.RoomNo == roomNo):
+                one.setWindLev(windLev)
+                break
+        que_lock.release()
+
     def deleteItem(self,roomno):
         que_lock.acquire()
         for x in queue:
@@ -149,30 +176,15 @@ class SubMatch:
                 queue.remove(x)
         que_lock.release()
 
-#########从机上行心跳包更新某个从机
-def update_temp(self,roomNo,temp):
-    que_lock.acquire()
-    #找到要修改的从机
-    for one in queue:
-        if(one.RoomNo == roomNo):
-            one.setTemp(temp)
-            break
-    que_lock.release()
+    #登陆后创建一个新的从机实例
+    def newServent(self,roomNo):
+        print("创建一个新从机")
+        SubMatch(roomNo)
 
-#温控请求对从机实例的风速修改
-def update_windLev(self,roomNo,windLev):
-    que_lock.acquire()
-    #找到要修改的从机
-    for one in queue:
-        if(one.RoomNo == roomNo):
-            one.setWindLev(windLev)
-            break
-    que_lock.release()
 
-#登陆后创建一个新的从机实例
-def newServent(self,roomNo):
-    SubMatch.__init__(roomNo)
-    print("创建一个新从机")
+queueMain = queueMaintance()
+server._updateTemp.connect(queueMain.update_temp)
+server._newServent.connect(queueMain.newServent)
 ''''
 #######从数据表找到从机号######
 def getRoomNo():

@@ -6,10 +6,14 @@ import re
 import math
 import sys
 from models.main.UserRecord import UserRecord
+from PyQt5.QtCore import pyqtSignal,QObject
 
+class communicate(QObject):
+    _newServent = pyqtSignal(int)
+    _updateTemp = pyqtSignal(int,float)
 
-class communicate:
     def __init__(self):
+        super().__init__()
         self.Freq = 2
         self.HOST, self.PORT = "localhost", 9999
         self.soc = socket.socket()
@@ -26,7 +30,7 @@ class communicate:
         print("AC_Req",Positive,Wind_Level)
 
     def Temp_Submit(self,Time,Client_No,Temp):
-        pass
+        self._updateTemp.emit(int(Client_No),float(Temp))
 
     def Login(self,Name,Password,Client_No,conn,addr):
         self.room_dict[Client_No] = (conn,addr)
@@ -48,7 +52,15 @@ class communicate:
             self.AC_Req(Positive,Wind_Level)
 
         if(root.nodeName == "Temp_Submit"):
-            pass
+            node = root.getElementsByTagName("Time")
+            Time = node[0].childNodes[0].data
+
+            node = root.getElementsByTagName("Client_No")
+            Client_No = node[0].childNodes[0].data
+
+            node = root.getElementsByTagName("Temp")
+            Temp = node[0].childNodes[0].data
+            self.Temp_Submit(Time,Client_No,Temp)
 
         if(root.nodeName == "Login"):
             node = root.getElementsByTagName("Name")
@@ -113,6 +125,9 @@ class communicate:
 
         node_Succeed = doc.createElement("Succeed")
         node_Succeed.appendChild(doc.createTextNode(str(Succeed)))
+        if Succeed == 1:
+            print("roomno emit",int(no))
+            self._newServent.emit(int(no))
         root.appendChild(node_Succeed)
 
         node_Name = doc.createElement("Name")
