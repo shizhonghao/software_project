@@ -23,25 +23,27 @@ class HeartBeat:
         self.timer.timeout.connect(self.to_servent)
 
     def to_servent(self):
-        print("to  change server freq")
-        print(queue)
+        toSend=[]
         que_lock.acquire()
         for one in queue:
             #server.Fare_Info(one.RoomNo,one.cost,one.energy)
             #print("to change freq of servent as %d" %(self.cost_interval))
             #临时的计价
-            ''''
+            w = 1.0*self.init_interval/60000.0
             if one.velocity == 3:
-                one.addCost(1.3*5.0,1.3)
+                one.addCost(1.3*5.0*w,1.3*w)
             elif one.velocity == 2:
-                one.addCost(5.0,1.0)
+                one.addCost(5.0*w,1.0*w)
             else:
-                one.addCost(0.8*5.0,1.0)
+                one.addCost(0.8*5.0*w,1.0*w)
             print("add complete")
-            '''
-            #server.Fare_Info(one.RoomNo,one.cost,one.energy)
-            server.Temp_Submit_Freq(one.RoomNo,self.cost_interval)
+            toSend.append([one.RoomNo,one.cost,one.energy])
         que_lock.release()
+
+        for oneroom in toSend:
+            server.Fare_Info(oneroom[0],oneroom[1],oneroom[2])
+            server.Temp_Submit_Freq(oneroom[0],self.cost_interval)
+
 
     def changeSubmintFreq(self,freq):
         self.cost_interval = freq

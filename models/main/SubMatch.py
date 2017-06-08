@@ -10,8 +10,8 @@ RoomNolist=[]
 AliveRoomNolist=[]
 
 class SubMatch:
-    def __init__(self,roomNo):
-        self.ID=""
+    def __init__(self,roomNo,name):
+        self.ID=name
         self.status=False
         self.switchcnt=0
         self.temp = 0.00
@@ -114,21 +114,19 @@ class SubMatch:
         print("change velocity of room %d complete" % (self.RoomNo))
 
   ################根据从机号和当前日期从从机状态表里找到对应的花销消耗，输出二元组列表，不存活的就弄成0########
-    def setCost(self):
-        if self.isalive == 0:
-            self.cost= 0.00
-            self.energy = 0
-        else:
-            sql = "SELECT cost,energy FROM servent_stat where room_no='%d' and date=curdate()"
-            data = self.RoomNo
-            # 互斥访问，预防并发访问时游标被占用，结果出错
-            db_lock.acquire()
-            cursor.execute(sql % data)
-            for row in cursor.fetchall():
-                self.cost = row[0]
-                self.energy = row[1]
-                print(row)
-            db_lock.release()  # 释放锁
+    def addSwitch_cnt(self):
+        self.isalive = 0
+        self.cost= 0.00
+        self.energy = 0
+        sql = "update servent_stat set switch_cnt = switch_cnt+1 where room_no='%d' and date=curdate()" % (self.RoomNo)
+        # 互斥访问，预防并发访问时游标被占用，结果出错
+        print(sql)
+        db_lock.acquire()
+        cursor.execute(sql)
+        db.commit()
+        db_lock.release()  # 释放锁
+        print("关机次数更新完成")
+
     ############监视界面需要的信息，输出五元组列表#######
     def getSub(self):
         list=[self.RoomNo,self.ID,self.isalive,self.temp,self.velocity]
@@ -150,6 +148,7 @@ class SubMatch:
         cursor.execute(sql)
         db.commit()
         db_lock.release()
+
 
 class queueMaintance(QObject):
     def __init__(self):
@@ -177,21 +176,24 @@ class queueMaintance(QObject):
         que_lock.release()
 
     def deleteItem(self,roomno):
+        print("将关闭从机%d" % (roomno))
         que_lock.acquire()
         for x in queue:
             if x.RoomNo==roomno:
+                x.addSwitch_cnt()
                 queue.remove(x)
         que_lock.release()
 
     #登陆后创建一个新的从机实例
-    def newServent(self,roomNo):
+    def newServent(self,roomNo,name):
         print("创建一个新从机")
-        SubMatch(roomNo)
+        SubMatch(roomNo,name)
 
 
 queueMain = queueMaintance()
 server._updateTemp.connect(queueMain.update_temp)
 server._newServent.connect(queueMain.newServent)
+server._quitServent.connect(queueMain.deleteItem)
 ''''
 #######从数据表找到从机号######
 def getRoomNo():

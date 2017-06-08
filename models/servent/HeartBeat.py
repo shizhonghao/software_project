@@ -5,6 +5,7 @@ import time
 
 class HeartBeat:
     init_interval = 1000
+    current_interval = 0
 
     def __init__(self,servent):
         #定时器
@@ -41,5 +42,7 @@ class HeartBeat:
         c.Temp_Submit(current_temp,serverNo,current_temp)
 
     def freq_change(self,Temp_Submit_freq):
-        self.timer.setInterval(Temp_Submit_freq*100)
-        print("freq changed as %d"%(Temp_Submit_freq))
+        if Temp_Submit_freq!=self.current_interval:
+            self.current_interval = Temp_Submit_freq
+            self.timer.setInterval(self.current_interval*100)
+            print("freq changed as %d"%(Temp_Submit_freq))

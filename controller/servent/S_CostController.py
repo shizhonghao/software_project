@@ -6,7 +6,7 @@ class S_CostController:
     def __init__(self,servent):
         self.now_time = datetime.datetime.now()
         self.servent = servent
-        self.birth_time = servent.loggedOn
+        self.birth_time = datetime.datetime.strptime(servent.loggedOn,'%Y-%m-%d %H:%M:%S')
         self.minitues = 0
         self.hours = 0
         self.secs = 0
@@ -18,11 +18,10 @@ class S_CostController:
         return self.hours,self.minitues,self.secs
 
     def getEngCost(self):
-        #print(self.servent.eng_cost)
+        print(self.servent.eng_cost)
         return self.servent.eng_cost
 
     def getMoneyCost(self):
-        #print(self.servent.money_cost)
-        self.servent.money_cost+=0.1
+        print(self.servent.money_cost)
         return self.servent.money_cost
 

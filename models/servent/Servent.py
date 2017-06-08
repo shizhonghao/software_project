@@ -22,7 +22,7 @@ class S_servent :
             self.targetT = 28.0
             self.sysT = 22.0
         '''
-        self.loggedOn = datetime.now()
+        self.loggedOn = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.eng_cost = 0.00
         self.money_cost = 0.00
         self.start_blowing = 1
@@ -71,11 +71,10 @@ class S_servent :
 
     def updatecost_deal(self, roomNo, loggedOn, EC, MC):
         print("账单-更改数据库")
-        sql = "update clientinfo set eng_cost = 1, money_cost = 1 where roomNo = %d and loggedOn = %s" % (
-         roomNo, loggedOn)
-        print(sql)
+        sql = "update clientinfo set eng_cost = %f, money_cost = %f where roomNo = %d and loggedOn = '%s'" % (
+         EC,MC,roomNo, loggedOn)
         db_lock.acquire()
-        cursor.execute(sql)
+        row=cursor.execute(sql)
         db.commit()
         db_lock.release()
         print("修改完毕")
@@ -99,7 +98,7 @@ class S_servent :
         db_lock.release()
 
     def updaterw_deal(self,roomNo, loggedOn, W, sb):
-        sql = "update clientinfo set sysW=%d, start_blowing=%d where roomNo = %d and loggedOn = %s" % (W, sb, roomNo, loggedOn)
+        sql = "update clientinfo set sysW=%d, start_blowing=%d where roomNo = %d and loggedOn = '%s'" % (W, sb, roomNo, loggedOn)
         db_lock.acquire()
         cursor.execute(sql)
         db.commit()
