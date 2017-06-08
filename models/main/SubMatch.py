@@ -113,9 +113,9 @@ class SubMatch:
         db_lock.release()  # 释放锁
         print("change velocity of room %d complete" % (self.RoomNo))
 
-  ################根据从机号和当前日期从从机状态表里找到对应的花销消耗，输出二元组列表，不存活的就弄成0########
+  ################根据由于断开连接而认为从机关机########
     def addSwitch_cnt(self):
-        self.isalive = 0
+        self.isdie()
         self.cost= 0.00
         self.energy = 0
         sql = "update servent_stat set switch_cnt = switch_cnt+1 where room_no='%d' and date=curdate()" % (self.RoomNo)
@@ -126,6 +126,19 @@ class SubMatch:
         db.commit()
         db_lock.release()  # 释放锁
         print("关机次数更新完成")
+
+    #########修改connection表的连接状态表示alive###################
+    def isdie(self):
+        self.isalive = 0
+        date = datetime.datetime.now()
+        start = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
+        end = datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
+        db_lock.acquire()
+        sql = "UPDATE connection SET is_alive=0 WHERE room_no=%d and login_time between '%s' and '%s'" % (
+        self.RoomNo, start, end)
+        cursor.execute(sql)
+        db.commit()
+        db_lock.release()
 
     ############监视界面需要的信息，输出五元组列表#######
     def getSub(self):
