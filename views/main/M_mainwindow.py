@@ -11,10 +11,10 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from views.main import M_statusDisplay, M_subMonitor, M_report, M_insertuser,M_login
+from models.main.HeartBeat import HeartBeat
 from PyQt5.QtWidgets import *
 import sys
 import datetime
-
 
 class M_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -52,6 +52,8 @@ class M_MainWindow(object):
 
         self.defaultWidget = M_statusDisplay.Ui_StatusDisplay()
         M_statusDisplay.Ui_StatusDisplay.setupUi(self.defaultWidget, self.centralwidget)
+        self.HeartBeat = HeartBeat(self.defaultWidget.controller.freq)  # 创建心跳包
+        self.defaultWidget._changedFreq.connect(self.HeartBeat.changeSubmintFreq)
 
         self.monitorWidget = M_subMonitor.Ui_SubMonitor()
         M_subMonitor.Ui_SubMonitor.setupUi(self.monitorWidget, self.centralwidget)
@@ -103,6 +105,7 @@ class M_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
 
     # def exit(self):
 

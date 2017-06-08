@@ -6,6 +6,8 @@ class S_BoardController:
     def __init__(self,servent):
        self.servent = servent
        c.wind_change_ac.connect(self.Wind_Change_deal)
+       c.fare_info_change.connect(self.Cost_Change_deal)
+
     #温度设置
     def T_raise(self,delta):
         #直接修改数据类
@@ -21,6 +23,9 @@ class S_BoardController:
 
     def Wind_Change_deal(self,Level,Start_Blowing):
         self.servent.update_rw(Level,Start_Blowing)
+
+    def Cost_Change_deal(self,Fare,Energy):
+        self.servent.update_cost(Fare,Energy)
 
     #状态查询
     def getCurrentState(self):

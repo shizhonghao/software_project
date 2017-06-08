@@ -9,8 +9,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 from controller.main import M_StatusController
+from PyQt5.QtCore import pyqtSignal
 
-class Ui_StatusDisplay(object):
+class Ui_StatusDisplay(QWidget):
+
+    _changedFreq = pyqtSignal(int)
+
     mtemp=0.00
     mvelocity=0
     controller=M_StatusController.StatusController()
@@ -114,7 +118,9 @@ class Ui_StatusDisplay(object):
         self.controller.changeStrat()
 
     def freqChanged(self):
-        self.controller.freq=self.freqSpinbox.value()
+        self.controller.freq=int(self.freqSpinbox.value())
+        print("to change freq as %d" % (self.controller.freq))
+        self._changedFreq.emit(self.controller.freq)
         self.controller.changeFreq()
 
 

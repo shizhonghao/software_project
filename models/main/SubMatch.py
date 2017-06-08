@@ -2,7 +2,6 @@
 from M_database import cursor,db_lock,db
 import datetime
 import threading
-from models.main.ControlPanel import cur_model
 from PyQt5.QtCore import pyqtSignal,QObject
 from server import server
 que_lock = threading.Lock()
@@ -15,10 +14,7 @@ class SubMatch:
         self.ID=""
         self.status=False
         self.switchcnt=0
-        if cur_model == 0:
-            self.temp = 28.00
-        else:
-            self.temp = 22.00
+        self.temp = 0.00
         self.velocity=0
         self.RoomNo=roomNo
         self.isalive=1
@@ -143,6 +139,17 @@ class SubMatch:
         list=[self.cost,self.energy]
         print(list)
         return list
+
+    def addCost(self,delmonye, deleng):
+        self.cost+=delmonye
+        self.energy+=deleng
+        db_lock.acquire()
+        sql = "UPDATE servent_stat SET cost=cost+%f, energy=energy+%f WHERE room_no='%d' and date=curdate()"\
+              % (delmonye,deleng,self.RoomNo)
+        print(sql)
+        cursor.execute(sql)
+        db.commit()
+        db_lock.release()
 
 class queueMaintance(QObject):
     def __init__(self):

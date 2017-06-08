@@ -16,6 +16,7 @@ class HeartBeat:
         self.target = servent
         print('timer set')
         self.timer.timeout.connect(self.state_update)
+        c.temp_freq_change.connect(self.freq_change)
 
     def state_update(self):
         #做状态更新
@@ -37,13 +38,8 @@ class HeartBeat:
         serverNo = self.target.roomNo
 
         current_temp = self.target.sysT
-        print("heart Beat",current_time,serverNo,current_temp)
         c.Temp_Submit(current_temp,serverNo,current_temp)
-        #此处应该要更新下刷新频率
-        ''''
-        self.init_interval +=1000
-        self.timer.setInterval(self.init_interval)
-        期望是用
-        self.timer.setInterval(self.target.freq)之类的
-        '''
-        #发信
+
+    def freq_change(self,Temp_Submit_freq):
+        self.timer.setInterval(Temp_Submit_freq*100)
+        print("freq changed as %d"%(Temp_Submit_freq))

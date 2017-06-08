@@ -7,12 +7,13 @@ from M_database import cursor,db_lock
 #主机心跳包，定时向从机们发送消息
 class HeartBeat:
     #初始间隔应该是主机的刷新频率
-    init_interval = 1000
+    init_interval = 3000
     cost_interval = 1000#根据需求，从机房间
 
-    def __init__(self,servent):
+    def __init__(self,freq):
         #定时器
         self.timer = QTimer()
+        self.cost_interval=freq
         self.timer.setInterval(self.init_interval)
         self.timer.start()
 
@@ -22,12 +23,26 @@ class HeartBeat:
         self.timer.timeout.connect(self.to_servent)
 
     def to_servent(self):
-        #发送的是从机的金额和用量
-        #此处应该要更新下刷新频率
-        ''''
-        
-        '''
-        #发信
-        #先查连接表，取出表中所有的从机（房间号）
-        #再查从机记录表，对那些房间号的连接中的记录，取其金钱能量量
-        #对他们发送他们现在的金钱
+        print("to  change server freq")
+        print(queue)
+        que_lock.acquire()
+        for one in queue:
+            #server.Fare_Info(one.RoomNo,one.cost,one.energy)
+            #print("to change freq of servent as %d" %(self.cost_interval))
+            #临时的计价
+            ''''
+            if one.velocity == 3:
+                one.addCost(1.3*5.0,1.3)
+            elif one.velocity == 2:
+                one.addCost(5.0,1.0)
+            else:
+                one.addCost(0.8*5.0,1.0)
+            print("add complete")
+            '''
+            #server.Fare_Info(one.RoomNo,one.cost,one.energy)
+            server.Temp_Submit_Freq(one.RoomNo,self.cost_interval)
+        que_lock.release()
+
+    def changeSubmintFreq(self,freq):
+        self.cost_interval = freq
+        self.to_servent()

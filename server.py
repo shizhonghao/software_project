@@ -36,7 +36,6 @@ class communicate(QObject):
         self.room_dict[Client_No] = (conn,addr)
         print(Client_No,"in dict")
         self.log.Check(Client_No,Name,Password)
-        self.Temp_Submit_Freq(Client_No, self.Freq)
 
     #------info processing functions
     def parse(self,xml,conn,addr):

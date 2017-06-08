@@ -6,6 +6,7 @@ class SubStatuController:
         self.messagelist=[]
 
     def showSub(self):
+        self.messagelist=[]
         for x in SubMatch.queue:
             self.messagelist.append(x.getSub())
         print("qqqqqqqq")
