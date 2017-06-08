@@ -29,7 +29,7 @@ class Ui_Form(object):
         self.pushButton.setGeometry(QtCore.QRect(210, 240, 112, 34))
         self.pushButton.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.pushButton.setObjectName("pushButton2")
-        self.pushButton.clicked.connect(self.Form.hide)
+        self.pushButton.clicked.connect(self.hide)
         self.pushButton.setText("close")
 
     def hide(self):
