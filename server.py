@@ -10,6 +10,7 @@ from models.main.UserRecord import UserRecord
 
 class communicate:
     def __init__(self):
+        self.Freq = 2
         self.HOST, self.PORT = "localhost", 9999
         self.soc = socket.socket()
         self.soc.bind((self.HOST, self.PORT))
@@ -31,7 +32,7 @@ class communicate:
         self.room_dict[Client_No] = (conn,addr)
         print(Client_No,"in dict")
         self.log.Check(Client_No,Name,Password)
-        pass
+        self.Temp_Submit_Freq(Client_No, self.Freq)
 
     #------info processing functions
     def parse(self,xml,conn,addr):
@@ -74,6 +75,9 @@ class communicate:
             data = data[1+head_len+xml_len:].lstrip()
             print("data:",data)
 
+    def connection_lost(self,no):
+        pass
+
     def send(self,no,info):  # no can be a room number or a socket(before Login_ACK)
         if type(no) == int:
             no = str(no)
@@ -83,6 +87,7 @@ class communicate:
                 sock = self.room_dict[no][0]
                 sock.sendall(bytes(info + "\n", "utf-8"))
             except:
+                self.connection_lost(no)
                 print(no,"is not connected",sys.exc_info())
         else:  # no is a socket
             try:
@@ -134,7 +139,7 @@ class communicate:
 
         self.send(no, str(len(root.toxml()) + 1) + root.toxml())
 
-    def Mode(self,Heater): #broadcast
+    def Mode_B(self,Heater): #broadcast
         doc = Dom.Document()
         root = doc.createElement("Mode")
 
@@ -172,7 +177,17 @@ class communicate:
 
         self.send(no, str(len(root.toxml()) + 1) + root.toxml())
 
-    def Temp_Submit_Freq(self,Temp_Submit_Freq): #broadcast
+    def Temp_Submit_Freq(self,no,Temp_Submit_Freq):
+        doc = Dom.Document()
+        root = doc.createElement("Temp_Submit_Freq")
+
+        node_Freq = doc.createElement("Temp_Submit_Freq")
+        node_Freq.appendChild(doc.createTextNode(str(Temp_Submit_Freq)))
+        root.appendChild(node_Freq)
+
+        self.send(no, str(len(root.toxml()) + 1) + root.toxml())
+
+    def Temp_Submit_Freq_B(self,Temp_Submit_Freq): #broadcast
         doc = Dom.Document()
         root = doc.createElement("Temp_Submit_Freq")
 
