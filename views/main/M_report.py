@@ -8,8 +8,17 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
+from datetime import datetime
+import M_database
 
 class Ui_Report(object):
+    room = [int for i in range(0, 10)]
+    type = 0
+    currentRoom = 0
+    currentDate = list([int for i in range(0, 3)])
+    s_year = 0
+    s_month = 0
+    s_day = 0
     def setupUi(self, MainWidow):
         self.Report=QWidget(MainWidow)
         self.Report.setObjectName("Report")
@@ -29,8 +38,327 @@ class Ui_Report(object):
         self.retranslateUi(self.Report)
         QtCore.QMetaObject.connectSlotsByName(self.Report)
 
+        # 设置当前时间
+        now = datetime.now()
+        self.currentDate[0] = now.year
+        self.currentDate[1] = now.month
+        self.currentDate[2] = now.day + 1
+        self.s_year = now.year
+        self.s_month = now.month
+        self.s_day = now.day
+        if (self.currentDate[1] == 12 and self.currentDate[2] == 32):
+            self.currentDate[0] = now.year + 1
+            self.currentDate[1] = 1
+            self.currentDate[2] = 1
+        elif (self.currentDate[1] == 2):
+            if (now.year % 4 == 0 and self.currentDate[2] == 30):
+                self.currentDate[1] = 3
+                self.currentDate[2] = 1
+            elif (self.currentDate[2] == 29):
+                self.currentDate[1] = 3
+                self.currentDate[2] = 1
+        elif ((self.currentDate[1] == 4 or self.currentDate[1] == 6 or self.currentDate[1] == 9 or self.currentDate[
+            1] == 11) and self.currentDate[2] == 31):
+            self.currentDate[1] = now.month + 1
+            self.currentDate[2] = 1
+        elif (self.currentDate[2] == 32):
+            self.currentDate[2] = 1
+            self.currentDate[1] = now.month + 1
+
+        # 时间控件的初始化
+        self.dateEdit = QtWidgets.QDateEdit(self.Report)
+        self.dateEdit.setGeometry(QtCore.QRect(20, 20, 110, 22))
+        self.dateEdit.setDateTime(QtCore.QDateTime.currentDateTime())
+
+        # 关于房号下拉菜单的初始化
+        self.comboBox = QtWidgets.QComboBox(self.Report)
+        self.comboBox.setGeometry(QtCore.QRect(20, 60, 87, 22))
+        self.comboBox.setObjectName("comboBox")
+        sqlquery = "SELECT DISTINCT ROOM_NO FROM CONNECTION"
+        M_database.cursor.execute(sqlquery)
+        # 把剩下的房间号接在all的后面
+        row = M_database.cursor.fetchone()
+        i = 0
+        if (row != None):
+            self.currentRoom = row[0]
+        while (row != None):
+            self.comboBox.addItem(str(row[0]))
+            self.room[i] = row[0]
+            i = i + 1
+            row = M_database.cursor.fetchone()
+
+        # 写开机次数的标签
+        self.label = QtWidgets.QLabel(self.Report)
+        self.label.setGeometry(QtCore.QRect(130, 60, 81, 21))
+        self.label.setObjectName("label")
+        # 显示开关机次数的格子
+        self.lineEdit = QtWidgets.QLineEdit(self.Report)
+        self.lineEdit.setGeometry(QtCore.QRect(220, 60, 51, 21))
+        self.lineEdit.setObjectName("lineEdit")
+        # 设置默认显示时的房间的开机次数
+        if (self.currentRoom != 0):
+            sqlquery = "SELECT SUM(SWITCH_CNT) FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE BETWEEN '%s-%s-%s' AND '%s-%s-%s' GROUP BY ROOM_NO" % (
+            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
+            str(self.currentDate[1]), str(self.currentDate[2]))
+            M_database.cursor.execute(sqlquery)
+            row = M_database.cursor.fetchone()
+            if (row != None):
+                self.lineEdit.setText(str(row[0]))
+            else:
+                self.lineEdit.setText("0")
+
+        # 写着总费用的标签
+        self.label_2 = QtWidgets.QLabel(self.Report)
+        self.label_2.setGeometry(QtCore.QRect(310, 60, 72, 21))
+        self.label_2.setObjectName("label_2")
+        # 显示总费用的格子
+        self.lineEdit_2 = QtWidgets.QLineEdit(self.Report)
+        self.lineEdit_2.setGeometry(QtCore.QRect(370, 60, 61, 21))
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        # 设置默认显示时的房间总费用
+        if (self.currentRoom != 0):
+            sqlquery = "SELECT SUM(COST) FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE = '%s-%s-%s'GROUP BY ROOM_NO" % (
+            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day))
+            M_database.cursor.execute(sqlquery)
+            row = M_database.cursor.fetchone()
+            if (row != None):
+                self.lineEdit_2.setText(str(row[0]))
+            else:
+                self.lineEdit_2.setText("0")
+
+        # 用来放所有的记录的表格
+        self.tableWidget = QtWidgets.QTableWidget(self.Report)
+        self.tableWidget.setGeometry(QtCore.QRect(130, 120, 700, 200))
+        self.tableWidget.setObjectName("tableWidget")
+        # 设置对用户只读
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        # 表格列数设置
+        self.tableWidget.setColumnCount(8)
+        # 表格列宽设置
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        # 表格列名设置
+        self.tableWidget.setHorizontalHeaderLabels(['房间号', '开始时间', '停止时间', '起始温度', '停止温度', '起始风速', '停止风速', '费用'])
+        # 查询默认显示的房间的所有请求
+        if (self.currentRoom != 0):
+            sqlquery = "SELECT * FROM REQUEST WHERE ROOM_NO = %s AND S_TIME BETWEEN '%s-%s-%s 00:00:00' AND '%s-%s-%s 00:00:00'" % (
+            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
+            str(self.currentDate[1]), str(self.currentDate[2]))
+            print(sqlquery)
+            M_database.cursor.execute(sqlquery)
+            rowCnt = M_database.cursor.rowcount
+            self.tableWidget.setRowCount(rowCnt)
+            row = M_database.cursor.fetchone()
+            rowNum = 0
+            while (row != None):
+                for i in range(0, 8):
+                    if (row[i] != None):
+                        newItem = QtWidgets.QTableWidgetItem(str(row[i]))
+                        # 设置居中
+                        newItem.setTextAlignment(4 | 8 * 16)
+                        self.tableWidget.setItem(rowNum, i, newItem)
+                row = M_database.cursor.fetchone()
+                rowNum = rowNum + 1
+        # 隐藏每行的表头
+        self.tableWidget.verticalHeader().setVisible(False)
+        # 写着请求记录的标签
+        self.label_3 = QtWidgets.QLabel(self.Report)
+        self.label_3.setGeometry(QtCore.QRect(130, 90, 72, 21))
+        self.label_3.setObjectName("label_3")
+
+        # 选择报表类型的按钮
+        self.pushButton = QtWidgets.QPushButton(self.Report)
+        self.pushButton.setGeometry(150, 10, 93, 28)
+        self.pushButton.setText("日报表")
+        self.pushButton_1 = QtWidgets.QPushButton(self.Report)
+        self.pushButton_1.setGeometry(280, 10, 93, 28)
+        self.pushButton_1.setText("周报表")
+        self.pushButton_2 = QtWidgets.QPushButton(self.Report)
+        self.pushButton_2.setGeometry(410, 10, 93, 28)
+        self.pushButton_2.setText("月报表")
+
+        '''
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 952, 26))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        '''
+        # 将各事件与触发的槽函数相关联
+        self.comboBox.activated.connect(self.comboboxSlot)
+        self.dateEdit.dateChanged.connect(self.dateEditSlot)
+        self.pushButton.clicked.connect(self.pushSlot)
+        self.pushButton_1.clicked.connect(self.push1Slot)
+        self.pushButton_2.clicked.connect(self.push2Slot)
+
     def retranslateUi(self, Report):
         _translate = QtCore.QCoreApplication.translate
         Report.setWindowTitle(_translate("Report", "Form"))
         self.labeltest2.setText(_translate("Report", "报表界面"))
+        #self.label.setText(_translate("Report", "开关机次数"))
+        #self.label_2.setText(_translate("Report", "总费用"))
+        #self.label_3.setText(_translate("Report", "请求记录"))
 
+    #更新各项显示
+    def updateView(self):
+        # 更新开关机次数
+        if (self.type == 0):
+            sqlquery = "SELECT SWITCH_CNT FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE = '%s-%s-%s'" % (str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day))
+        else:
+            sqlquery = "SELECT SUM(SWITCH_CNT) FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE BETWEEN '%s-%s-%s' AND '%s-%s-%s' GROUP BY ROOM_NO" % (str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),str(self.currentDate[1]), str(self.currentDate[2]))
+        print(sqlquery)
+        M_database.cursor.execute(sqlquery)
+        row = M_database.cursor.fetchone()
+        if (row != None):
+            self.lineEdit.setText(str(row[0]))
+        else:
+            self.lineEdit.setText("0")
+
+        # 更新开销
+        if (self.type == 0):
+            sqlquery = "SELECT COST FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE = '%s-%s-%s'" % (
+            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day))
+        else:
+            sqlquery = "SELECT SUM(COST) FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE BETWEEN '%s-%s-%s' AND '%s-%s-%s' GROUP BY ROOM_NO" % (
+            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
+            str(self.currentDate[1]), str(self.currentDate[2]))
+        print(sqlquery)
+        M_database.cursor.execute(sqlquery)
+        row = M_database.cursor.fetchone()
+        if (row != None):
+            self.lineEdit_2.setText(str(row[0]))
+        else:
+            self.lineEdit_2.setText("0")
+
+        # 更新请求
+        sqlquery = "SELECT * FROM REQUEST WHERE ROOM_NO = %s AND S_TIME BETWEEN '%s-%s-%s 00:00:00' AND '%s-%s-%s 00:00:00' GROUP BY ROOM_NO" % (
+        str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
+        str(self.currentDate[1]), str(self.currentDate[2]))
+        print(sqlquery)
+        M_database.cursor.execute(sqlquery)
+        rowNum = M_database.cursor.rowcount
+        self.tableWidget.setRowCount(rowNum)
+        row = M_database.cursor.fetchone()
+        rowCnt = 0
+        while (row != None):
+            for i in range(0, 8):
+                if (row[i] != None):
+                    newItem = QtWidgets.QTableWidgetItem(str(row[i]))
+                    # 设置居中
+                    newItem.setTextAlignment(4 | 8 * 16)
+                    self.tableWidget.setItem(rowCnt, i, newItem)
+            row = M_database.cursor.fetchone()
+            rowCnt = rowCnt + 1
+
+    #因combobox中的变化而触发的函数
+    def comboboxSlot(self):
+        self.currentRoom = self.room[self.comboBox.currentIndex()]
+        print("%s chosen"%(str(self.currentRoom)))
+        self.updateView()
+
+    #修改时间后的更新函数
+    def dateEditSlot(self):
+        #更新时间
+        time = ""
+        i = 0
+        j = 0
+        flag = 0
+        while(i < len(self.dateEdit.text())):
+            while(self.dateEdit.text()[i] != '/' and flag == 0):
+                time = time + self.dateEdit.text()[i]
+                if(i + 1 == len(self.dateEdit.text())):
+                    flag = 1
+                else:
+                    i = i + 1
+            self.currentDate[j] = int(time)
+            j = j + 1
+            time = ""
+            i = i + 1
+        #更新页面时间
+        if(self.type == 0):
+            self.s_year = self.currentDate[0]
+            self.s_month = self.currentDate[1]
+            self.s_day = self.currentDate[2]
+            self.currentDate[2] = self.currentDate[2] + 1
+            if (self.currentDate[1] == 12 and self.currentDate[2] == 32):
+                self.currentDate[0] = self.s_year + 1
+                self.currentDate[1] = 1
+                self.currentDate[2] = 1
+            elif (self.currentDate[1] == 2):
+                if (self.s_year % 4 == 0 and self.currentDate[2] == 30):
+                    self.currentDate[1] = 3
+                    self.currentDate[2] = 1
+                elif (self.currentDate[2] == 29):
+                    self.currentDate[1] = 3
+                    self.currentDate[2] = 1
+            elif ((self.currentDate[1] == 4 or self.currentDate[1] == 6 or self.currentDate[1] == 9 or self.currentDate[1] == 11) and self.currentDate[2] == 31):
+                self.currentDate[1] = self.s_month + 1
+                self.currentDate[2] = 1
+            elif (self.currentDate[2] == 32):
+                self.currentDate[2] = 1
+                self.currentDate[1] = self.s_month + 1
+        elif(self.type == 1):#周报表
+            self.s_year = self.currentDate[0]
+            self.s_month = self.currentDate[1]
+            self.s_day = self.currentDate[2] - 7
+            if(self.s_day <= 0):
+                if(self.s_month == 1):
+                    self.s_year = self.s_year - 1
+                    self.s_month = 12
+                    self.s_day = self.s_day + 31
+                elif(self.s_month == 3):
+                    self.s_month = 2
+                    if(self.s_year % 4 == 0):
+                        self.s_day = self.s_day + 29
+                    else:
+                        self.s_day = self.s_day + 28
+                elif(self.s_month == 5 or self.s_month == 7 or self.s_month == 10 or self.s_month == 12):
+                    self.s_month = self.s_month - 1
+                    self.s_day = self.s_day + 30
+                else:
+                    self.s_month = self.s_month - 1
+                    self.s_day = self.s_day + 31
+        elif(self.type == 2):
+            self.s_year = self.currentDate[0]
+            self.s_month = self.currentDate[1] -1
+            self.s_day = self.currentDate[2]
+            if(self.s_month == 0):
+                self.s_year = self.s_year - 1
+                self.s_month = 12
+            elif(self.s_month == 2 and self.s_day > 28):
+                if(self.s_year % 4 == 0):
+                    self.s_day = 29
+                else:
+                    self.s_day = 28
+            elif(self.s_day == 31):
+                if(self.s_month == 4 or self.s_month == 6 or self.s_month == 9 or self.s_month == 11):
+                    self.s_day = 30
+        print("Time changed to %s-%s-%s" % (str(self.s_year),str(self.s_month),str(self.s_day)))
+        #更新各部分显示
+        self.updateView()
+
+    #选择了日报表
+    def pushSlot(self):
+        print("啊，日报表")
+        #更新报表类型
+        self.type = 0
+        #更新时间和各部分显示
+        self.dateEditSlot()
+
+    def push1Slot(self):
+        print("啊，周报表")
+        #修改报表类型
+        self.type = 1
+        #更新时间和各部分显示
+        self.dateEditSlot()
+
+    def push2Slot(self):
+        print("啊，月报表")
+        #修改报表类型
+        self.type = 2
+        #更新时间和各部分显示
+        self.dateEditSlot()
