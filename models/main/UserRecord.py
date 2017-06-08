@@ -2,6 +2,7 @@
 
 from M_database import cursor,db_lock,db
 from PyQt5.QtCore import pyqtSignal,QObject
+from datetime import datetime
 
 class UserRecord(QObject):
     __tablename__ = 'usr'
@@ -19,21 +20,39 @@ class UserRecord(QObject):
         if row == None:
             print("not connected")
             self.log_sig.emit(Room_No, 0, Name, Password, Mode)
+            #return False
         else:
             print("connected")
             self.log_sig.emit(Room_No, 1, Name, Password, Mode)
-            date = 1
+            date = datetime.now()
+            start = datetime(date.year, date.month, date.day, 0, 0, 0)
+            end = datetime(date.year, date.month, date.day, 23, 59, 59)
             db_lock.acquire()
-            sql = "SELECT * FROM connection WHERE room_no='%s' and date='%s'" % (Room_No, date)
+            sql = "SELECT * FROM connection WHERE room_no=%d and login_time between '%s' and '%s'" % (int(Room_No), start, end)
             cursor.execute(sql)
             row = cursor.fetchone()
             db_lock.release()
             if row == None:
                 print("new room")
-                sql = "INSERT INTO connection values(1,'%s','%s','%s','%s')" % (date, Name, Password, Room_No)
+                sql = "INSERT INTO connection values(%d,'%s','%s','%s',1)" % (int(Room_No), Name, Password, date)
+                print(sql)
+                db_lock.acquire()
+                cursor.execute(sql)
+                db.commit()
+                db_lock.release()
+                print("insert done")
             else:
                 print("room exists")
-                sql = "ALTER TABLE connection SET is_alive = 1 WHERE room_no='%s' and date='%s'" % (Room_No, date)
+                '''
+                sql = "ALTER TABLE connection SET is_alive = 1, login_time='%s' WHERE room_no=%d and login_time between '%s' and '%s'" % (date,int(Room_No), start,end)
+                db_lock.acquire()
+                print(sql)
+                cursor.execute(sql)
+                db.commit()
+                db_lock.release()
+                print("alter done")
+                '''
+            #return True
 
     def insertmes(self,name,pwd):
         sql = "insert into usr(name,pwd) value ('%s','%s')" %(name,pwd)
