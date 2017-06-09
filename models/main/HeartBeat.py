@@ -4,6 +4,8 @@ from server import server
 import time
 from models.main.SubMatch import queue,que_lock#使用中的从机队列
 from M_database import cursor,db_lock
+from models.main.Request import Request
+
 #主机心跳包，定时向从机们发送消息
 class HeartBeat:
     #初始间隔应该是主机的刷新频率
@@ -30,12 +32,15 @@ class HeartBeat:
             #print("to change freq of servent as %d" %(self.cost_interval))
             #临时的计价
             w = 1.0*self.init_interval/60000.0
-            if one.velocity == 3:
+            if one.velocity*one.start_blowing == 3:
                 one.addCost(1.3*5.0*w,1.3*w)
-            elif one.velocity == 2:
+                Request.costUpdate(Request(), one.RoomNo, 1.3*5.0*w)
+            elif one.velocity*one.start_blowing == 2:
                 one.addCost(5.0*w,1.0*w)
-            else:
+                Request.costUpdate(Request(), one.RoomNo, 1.0 * 5.0 * w)
+            elif one.velocity*one.start_blowing == 1:
                 one.addCost(0.8*5.0*w,1.0*w)
+                Request.costUpdate(Request(), one.RoomNo, 0.8 * 5.0 * w)
             print("add complete")
             toSend.append([one.RoomNo,one.cost,one.energy])
         que_lock.release()

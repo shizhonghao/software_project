@@ -4,6 +4,7 @@ import datetime
 import threading
 from PyQt5.QtCore import pyqtSignal,QObject
 from server import server
+from models.main.Request import Request
 que_lock = threading.Lock()
 queue=[]
 RoomNolist=[]
@@ -16,6 +17,7 @@ class SubMatch:
         self.switchcnt=0
         self.temp = 0.00
         self.velocity=0
+        self.start_blowing = 0
         self.RoomNo=roomNo
         self.isalive=1
         self.cost=0.00
@@ -100,9 +102,14 @@ class SubMatch:
         db_lock.release()  # 释放锁
         print("change temp of room %d, complete" % (self.RoomNo))
 
+    def setStartBlowing(self,start_blowing):
+        self.start_blowing = start_blowing
+
     ################根据从机号和当前日期从从机状态表里找到对应的行修改其风速，和实例本身的风速########
-    def setWindLev(self, velocity):
+    def setWindLev(self, velocity,start_blowing):
         self.velocity = velocity
+        self.setStartBlowing(start_blowing)
+
         # 互斥访问，预防并发访问时游标被占用，结果出错
         print("change velocity of room %d" % (self.RoomNo))
         db_lock.acquire()
@@ -112,6 +119,8 @@ class SubMatch:
         db.commit()
         db_lock.release()  # 释放锁
         print("change velocity of room %d complete" % (self.RoomNo))
+        #新的请求
+        Request.newRequest(Request(),self.RoomNo,self.temp,self.velocity*self.start_blowing)
 
   ################根据由于断开连接而认为从机关机########
     def addSwitch_cnt(self):
@@ -179,12 +188,13 @@ class queueMaintance(QObject):
         que_lock.release()
 
     #温控请求对从机实例的风速修改
-    def update_windLev(self,roomNo,windLev):
+    def update_windLev(self,roomNo,windLev,start_blowing):
         que_lock.acquire()
         #找到要修改的从机
         for one in queue:
             if(one.RoomNo == roomNo):
-                one.setWindLev(windLev)
+                print("to add request of %d" % (one.RoomNo))
+                one.setWindLev(windLev,start_blowing)
                 break
         que_lock.release()
 
@@ -193,6 +203,9 @@ class queueMaintance(QObject):
         que_lock.acquire()
         for x in queue:
             if x.RoomNo==roomno:
+                #结束进行中的request表项
+                Request.endRequest(Request(),x.RoomNo,x.temp,x.velocity*x.start_blowing)
+                #关闭次数+1
                 x.addSwitch_cnt()
                 queue.remove(x)
         que_lock.release()
@@ -207,6 +220,7 @@ queueMain = queueMaintance()
 server._updateTemp.connect(queueMain.update_temp)
 server._newServent.connect(queueMain.newServent)
 server._quitServent.connect(queueMain.deleteItem)
+server._newRequest.connect(queueMain.update_windLev)
 ''''
 #######从数据表找到从机号######
 def getRoomNo():

@@ -12,6 +12,8 @@ class communicate(QObject):
     _newServent = pyqtSignal(int,str)
     _updateTemp = pyqtSignal(int,float)
     _quitServent = pyqtSignal(int)
+    _newRequest = pyqtSignal(int,int,int)
+    Model = 1
 
     def __init__(self):
         super().__init__()
@@ -20,21 +22,22 @@ class communicate(QObject):
         self.soc = socket.socket()
         self.soc.bind((self.HOST, self.PORT))
         self.soc.listen(10) #max number of clients listening to
-        self.socket_list = []
-        self.room_dict = {}
+        self.socket_list = []  # 包含tuple(conn,addr)
+        self.room_dict = {}  # {room_no:(conn,addr)}
+        self.socket_dict = {}  # {(conn,addr):room_no}
         self.log = UserRecord()
         self.log.log_sig.connect(self.Login_ACK)
 
     #------local setting functions
-    def AC_Req(self,Positive,Wind_Level):
-        print("in req")
-        print("AC_Req",Positive,Wind_Level)
+    def AC_Req(self,room_no,Positive,Wind_Level):
+        self._newRequest.emit(int(room_no),int(Positive),int(Wind_Level))
 
     def Temp_Submit(self,Time,Client_No,Temp):
         self._updateTemp.emit(int(Client_No),float(Temp))
 
     def Login(self,Name,Password,Client_No,conn,addr):
         self.room_dict[Client_No] = (conn,addr)
+        self.socket_dict[(conn, addr)] = Client_No
         print(Client_No,"in dict")
         self.log.Check(Client_No,Name,Password)
 
@@ -48,8 +51,8 @@ class communicate(QObject):
 
             node = root.getElementsByTagName("Wind_Level")
             Wind_Level = node[0].childNodes[0].data
-            
-            self.AC_Req(Positive,Wind_Level)
+            room_no = self.socket_dict[(conn, addr)]
+            self.AC_Req(room_no, Positive, Wind_Level)
 
         if(root.nodeName == "Temp_Submit"):
             node = root.getElementsByTagName("Time")
@@ -57,7 +60,6 @@ class communicate(QObject):
 
             node = root.getElementsByTagName("Client_No")
             Client_No = node[0].childNodes[0].data
-
             node = root.getElementsByTagName("Temp")
             Temp = node[0].childNodes[0].data
             self.Temp_Submit(Time,Client_No,Temp)
@@ -72,7 +74,7 @@ class communicate(QObject):
             node = root.getElementsByTagName("Client_No")
             Client_No = node[0].childNodes[0].data
 
-            self.Login(Name,Password,Client_No,conn,addr);
+            self.Login(Name,Password,Client_No,conn,addr)
 
     def recv(self,data,conn,addr):
         print("process:",data)
@@ -88,6 +90,11 @@ class communicate(QObject):
             print("data:",data)
 
     def connection_lost(self,no):
+        soc = self.room_dict[no]
+        del self.room_dict[no]
+        del self.socket_dict[soc]
+        self.socket_list.remove(soc)
+
         self._quitServent.emit(int(no))
         pass
 
@@ -119,8 +126,8 @@ class communicate(QObject):
                 self.socket_list.remove((conn,addr))
 
     #------message sending functions
-    def Login_ACK(self,no,Succeed,Name,Password,Mode):
-        print(no,Succeed,Name,Password,Mode)
+    def Login_ACK(self,no,Succeed,Name,Password):
+        print(no,Succeed,Name,Password)
         doc = Dom.Document()
         root = doc.createElement("Login_ACK")
 
@@ -141,7 +148,7 @@ class communicate(QObject):
         root.appendChild(node_Password)
 
         node_Mode = doc.createElement("Mode")
-        node_Mode.appendChild(doc.createTextNode(str(Mode)))
+        node_Mode.appendChild(doc.createTextNode(str(self.Model)))
         root.appendChild(node_Mode)
 
         self.send(no, str(len(root.toxml()) + 1) + root.toxml())
@@ -258,4 +265,4 @@ if __name__ == "__main__":
         time.sleep(5)
         server.Temp_Submit_Freq(5)
         inp = input("press ENTER to send ACK")
-        server.Login_ACK(103,1,"frank","123456789","1")
+        server.Login_ACK(103,1,"frank","123456789")

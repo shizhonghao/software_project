@@ -9,7 +9,7 @@ class Request:
         sqlquery = "select max(s_time) from request where room_no = %s group by room_no" % (str(roomNo))
         print(sqlquery)
         db_lock.acquire()
-        cursor.execute(sqlquery)
+’        cursor.execute(sqlquery)
         row = cursor.fetchone()
         db_lock.release()
         if(row == None):
@@ -19,8 +19,7 @@ class Request:
             sqlquery = "update request set cost = cost + %s where s_time = '%s' and room_no = %s" % (str(addCost),str(time),str(roomNo))
             print(sqlquery)
             db_lock.acquire()
-            cursor.execute(sqlquery)
-            db_lock.release()
+            cursor.execute(sqlquery)            db_lock.release()
 
 
     #结束一个请求
@@ -46,7 +45,9 @@ class Request:
         time = datetime.now()
         #终止上个请求
         self.endRequest(roomNo,temp,windLevel)
-        sqlquery = "insert into request(room_no,s_temp,s_wind_level,s_time,cost) values(%s,%s,%s,%s,0)" % (str(roomNo),str(temp),str(windLevel),str(time))
+
+        sqlquery = "insert into request(room_no,s_temp,s_wind_level,s_time,cost) values(%s,%s,%s,'%s',0)" % (str(roomNo),str(temp),str(windLevel),str(time))
+
         print(sqlquery)
         db_lock.acquire()
         cursor.execute(sqlquery)
@@ -60,10 +61,10 @@ class Request:
         cursor.execute(sqlquery)
         row = cursor.fetchone()
         room = []
-        while(row != None):
-            room.append(row[0])
+        while(row != None):            room.append(row[0])
             row = cursor.fetchone()
         db_lock.release()
+
         return room
 
     #获得房间的开机次数
@@ -110,3 +111,5 @@ class Request:
             row = cursor.fetchone()
         db_lock.release()
         return request
+      
+

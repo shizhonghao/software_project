@@ -6,11 +6,10 @@ from datetime import datetime
 
 class UserRecord(QObject):
     __tablename__ = 'usr'
-    log_sig = pyqtSignal(str, int, str, str, int)
+    log_sig = pyqtSignal(str, int, str, str)
 
     def Check(self, Room_No, Name, Password):
         print("check:", Room_No, Name, Password)
-        Mode = 1  # 这里需要一个获取Mode的函数
         db_lock.acquire()
         sql = "SELECT * FROM " + self.__tablename__ + " WHERE name='%s' and pwd='%s'" % (Name, Password)
         cursor.execute(sql)
@@ -19,11 +18,11 @@ class UserRecord(QObject):
         print(row)
         if row == None:
             print("not connected")
-            self.log_sig.emit(Room_No, 0, Name, Password, Mode)
+            self.log_sig.emit(Room_No, 0, Name, Password)
             #return False
         else:
             print("connected")
-            self.log_sig.emit(Room_No, 1, Name, Password, Mode)
+            self.log_sig.emit(Room_No, 1, Name, Password)
             date = datetime.now()
             start = datetime(date.year, date.month, date.day, 0, 0, 0)
             end = datetime(date.year, date.month, date.day, 23, 59, 59)
