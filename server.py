@@ -9,8 +9,9 @@ from models.main.UserRecord import UserRecord
 from PyQt5.QtCore import pyqtSignal,QObject
 
 class communicate(QObject):
-    _newServent = pyqtSignal(int)
+    _newServent = pyqtSignal(int,str)
     _updateTemp = pyqtSignal(int,float)
+    _quitServent = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
@@ -36,7 +37,6 @@ class communicate(QObject):
         self.room_dict[Client_No] = (conn,addr)
         print(Client_No,"in dict")
         self.log.Check(Client_No,Name,Password)
-        self.Temp_Submit_Freq(Client_No, self.Freq)
 
     #------info processing functions
     def parse(self,xml,conn,addr):
@@ -88,6 +88,7 @@ class communicate(QObject):
             print("data:",data)
 
     def connection_lost(self,no):
+        self._quitServent.emit(int(no))
         pass
 
     def send(self,no,info):  # no can be a room number or a socket(before Login_ACK)
@@ -125,14 +126,15 @@ class communicate(QObject):
 
         node_Succeed = doc.createElement("Succeed")
         node_Succeed.appendChild(doc.createTextNode(str(Succeed)))
-        if Succeed == 1:
-            print("roomno emit",int(no))
-            self._newServent.emit(int(no))
         root.appendChild(node_Succeed)
 
         node_Name = doc.createElement("Name")
         node_Name.appendChild(doc.createTextNode(str(Name)))
         root.appendChild(node_Name)
+
+        if Succeed == 1:#认证成功，创建从机类
+            print("roomno emit",int(no),Name)
+            self._newServent.emit(int(no),Name)
 
         node_Password = doc.createElement("Password")
         node_Password.appendChild(doc.createTextNode(str(Password)))
