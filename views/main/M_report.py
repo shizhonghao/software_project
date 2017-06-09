@@ -9,7 +9,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 from datetime import datetime
-import M_database
+from models.main.Request import Request
 
 class Ui_Report(object):
     room = [int for i in range(0, 10)]
@@ -74,57 +74,41 @@ class Ui_Report(object):
         self.comboBox = QtWidgets.QComboBox(self.Report)
         self.comboBox.setGeometry(QtCore.QRect(20, 60, 87, 22))
         self.comboBox.setObjectName("comboBox")
-        sqlquery = "SELECT DISTINCT ROOM_NO FROM CONNECTION"
-        M_database.cursor.execute(sqlquery)
-        # 把剩下的房间号接在all的后面
-        row = M_database.cursor.fetchone()
+        room = Request.getRoomNo(Request())
+        roomLen = len(room)
         i = 0
-        if (row != None):
-            self.currentRoom = row[0]
-        while (row != None):
-            self.comboBox.addItem(str(row[0]))
-            self.room[i] = row[0]
+        if (roomLen != 0):
+            self.currentRoom = room[0]
+        while (i < roomLen):
+            self.comboBox.addItem(str(room[0]))
+            self.room[i] = room[0]
             i = i + 1
-            row = M_database.cursor.fetchone()
 
         # 写开机次数的标签
         self.label = QtWidgets.QLabel(self.Report)
         self.label.setGeometry(QtCore.QRect(130, 60, 81, 21))
-        self.label.setObjectName("label")
+        self.label.setText("开机次数")
         # 显示开关机次数的格子
         self.lineEdit = QtWidgets.QLineEdit(self.Report)
         self.lineEdit.setGeometry(QtCore.QRect(220, 60, 51, 21))
         self.lineEdit.setObjectName("lineEdit")
         # 设置默认显示时的房间的开机次数
         if (self.currentRoom != 0):
-            sqlquery = "SELECT SUM(SWITCH_CNT) FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE BETWEEN '%s-%s-%s' AND '%s-%s-%s' GROUP BY ROOM_NO" % (
-            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
-            str(self.currentDate[1]), str(self.currentDate[2]))
-            M_database.cursor.execute(sqlquery)
-            row = M_database.cursor.fetchone()
-            if (row != None):
-                self.lineEdit.setText(str(row[0]))
-            else:
-                self.lineEdit.setText("0")
+            switch_cnt = Request.getSwitchCnt(Request(),self.currentRoom,"%s-%s-%s"%(str(self.s_year),str(self.s_month),str(self.s_day)),"%s-%s-%s"%(str(self.currentDate[0]),str(self.currentDate[1]),str(self.currentDate[2])))
+            self.lineEdit.setText(str(switch_cnt))
 
         # 写着总费用的标签
         self.label_2 = QtWidgets.QLabel(self.Report)
         self.label_2.setGeometry(QtCore.QRect(310, 60, 72, 21))
-        self.label_2.setObjectName("label_2")
+        self.label_2.setText("总费用")
         # 显示总费用的格子
         self.lineEdit_2 = QtWidgets.QLineEdit(self.Report)
         self.lineEdit_2.setGeometry(QtCore.QRect(370, 60, 61, 21))
         self.lineEdit_2.setObjectName("lineEdit_2")
         # 设置默认显示时的房间总费用
         if (self.currentRoom != 0):
-            sqlquery = "SELECT SUM(COST) FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE = '%s-%s-%s'GROUP BY ROOM_NO" % (
-            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day))
-            M_database.cursor.execute(sqlquery)
-            row = M_database.cursor.fetchone()
-            if (row != None):
-                self.lineEdit_2.setText(str(row[0]))
-            else:
-                self.lineEdit_2.setText("0")
+            cost = Request.getCost(Request(),self.currentRoom,"%s-%s-%s"%(str(self.s_year),str(self.s_month),str(self.s_day)),"%s-%s-%s"%(str(self.currentDate[0]),str(self.currentDate[1]),str(self.currentDate[2])))
+            self.lineEdit_2.setText(str(cost))
 
         # 用来放所有的记录的表格
         self.tableWidget = QtWidgets.QTableWidget(self.Report)
@@ -140,24 +124,22 @@ class Ui_Report(object):
         self.tableWidget.setHorizontalHeaderLabels(['房间号', '开始时间', '停止时间', '起始温度', '停止温度', '起始风速', '停止风速', '费用'])
         # 查询默认显示的房间的所有请求
         if (self.currentRoom != 0):
-            sqlquery = "SELECT * FROM REQUEST WHERE ROOM_NO = %s AND S_TIME BETWEEN '%s-%s-%s 00:00:00' AND '%s-%s-%s 00:00:00'" % (
-            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
-            str(self.currentDate[1]), str(self.currentDate[2]))
-            print(sqlquery)
-            M_database.cursor.execute(sqlquery)
-            rowCnt = M_database.cursor.rowcount
-            self.tableWidget.setRowCount(rowCnt)
-            row = M_database.cursor.fetchone()
-            rowNum = 0
-            while (row != None):
-                for i in range(0, 8):
-                    if (row[i] != None):
-                        newItem = QtWidgets.QTableWidgetItem(str(row[i]))
+            #sqlquery = "SELECT * FROM REQUEST WHERE ROOM_NO = %s AND S_TIME BETWEEN '%s-%s-%s 00:00:00' AND '%s-%s-%s 00:00:00'" % (
+            #str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
+            #str(self.currentDate[1]), str(self.currentDate[2]))
+            #print(sqlquery)
+            #M_database.cursor.execute(sqlquery)
+            #rowCnt = M_database.cursor.rowcount
+            #row = M_database.cursor.fetchone()
+            request = Request.getRequest(Request(),self.currentRoom,"%s-%s-%s"%(str(self.s_year),str(self.s_month),str(self.s_day)),"%s-%s-%s"%(str(self.currentDate[0]),str(self.currentDate[1]), str(self.currentDate[2])))
+            self.tableWidget.setRowCount(len(request))
+            for i in range(0,len(request)):
+                for j in range(0, 8):
+                    if (request[i][j] != None):
+                        newItem = QtWidgets.QTableWidgetItem(str(request[i][j]))
                         # 设置居中
                         newItem.setTextAlignment(4 | 8 * 16)
-                        self.tableWidget.setItem(rowNum, i, newItem)
-                row = M_database.cursor.fetchone()
-                rowNum = rowNum + 1
+                        self.tableWidget.setItem(i,j, newItem)
         # 隐藏每行的表头
         self.tableWidget.verticalHeader().setVisible(False)
         # 写着请求记录的标签
@@ -206,53 +188,26 @@ class Ui_Report(object):
     #更新各项显示
     def updateView(self):
         # 更新开关机次数
-        if (self.type == 0):
-            sqlquery = "SELECT SWITCH_CNT FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE = '%s-%s-%s'" % (str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day))
-        else:
-            sqlquery = "SELECT SUM(SWITCH_CNT) FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE BETWEEN '%s-%s-%s' AND '%s-%s-%s' GROUP BY ROOM_NO" % (str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),str(self.currentDate[1]), str(self.currentDate[2]))
-        print(sqlquery)
-        M_database.cursor.execute(sqlquery)
-        row = M_database.cursor.fetchone()
-        if (row != None):
-            self.lineEdit.setText(str(row[0]))
-        else:
-            self.lineEdit.setText("0")
+        switch_cnt = Request.getSwitchCnt(Request(), self.currentRoom,"%s-%s-%s" % (str(self.s_year), str(self.s_month), str(self.s_day)),"%s-%s-%s" % (str(self.currentDate[0]), str(self.currentDate[1]), str(self.currentDate[2])))
+        self.lineEdit.setText(str(switch_cnt))
+        #else:
+        #    self.lineEdit.setText("0")
 
         # 更新开销
-        if (self.type == 0):
-            sqlquery = "SELECT COST FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE = '%s-%s-%s'" % (
-            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day))
-        else:
-            sqlquery = "SELECT SUM(COST) FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE BETWEEN '%s-%s-%s' AND '%s-%s-%s' GROUP BY ROOM_NO" % (
-            str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
-            str(self.currentDate[1]), str(self.currentDate[2]))
-        print(sqlquery)
-        M_database.cursor.execute(sqlquery)
-        row = M_database.cursor.fetchone()
-        if (row != None):
-            self.lineEdit_2.setText(str(row[0]))
-        else:
-            self.lineEdit_2.setText("0")
+        cost = Request.getCost(Request(), self.currentRoom,"%s-%s-%s" % (str(self.s_year), str(self.s_month), str(self.s_day)), "%s-%s-%s" % (str(self.currentDate[0]), str(self.currentDate[1]), str(self.currentDate[2])))
+        self.lineEdit_2.setText(str(cost))
 
         # 更新请求
-        sqlquery = "SELECT * FROM REQUEST WHERE ROOM_NO = %s AND S_TIME BETWEEN '%s-%s-%s 00:00:00' AND '%s-%s-%s 00:00:00' GROUP BY ROOM_NO" % (
-        str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
-        str(self.currentDate[1]), str(self.currentDate[2]))
-        print(sqlquery)
-        M_database.cursor.execute(sqlquery)
-        rowNum = M_database.cursor.rowcount
-        self.tableWidget.setRowCount(rowNum)
-        row = M_database.cursor.fetchone()
-        rowCnt = 0
-        while (row != None):
-            for i in range(0, 8):
-                if (row[i] != None):
-                    newItem = QtWidgets.QTableWidgetItem(str(row[i]))
+        request = Request.getRequest(Request(), self.currentRoom,"%s-%s-%s" % (str(self.s_year), str(self.s_month), str(self.s_day)), "%s-%s-%s" % (str(self.currentDate[0]), str(self.currentDate[1]), str(self.currentDate[2])))
+        self.tableWidget.setRowCount(len(request))
+        print(request)
+        for i in range(0,len(request)):
+            for j in range(0, 8):
+                if (request[i][j] != None):
+                    newItem = QtWidgets.QTableWidgetItem(str(request[i][j]))
                     # 设置居中
                     newItem.setTextAlignment(4 | 8 * 16)
-                    self.tableWidget.setItem(rowCnt, i, newItem)
-            row = M_database.cursor.fetchone()
-            rowCnt = rowCnt + 1
+                    self.tableWidget.setItem(i, j, newItem)
 
     #因combobox中的变化而触发的函数
     def comboboxSlot(self):
