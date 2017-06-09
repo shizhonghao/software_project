@@ -12,7 +12,6 @@ class communicate(QObject):
     _newServent = pyqtSignal(int,str)
     _updateTemp = pyqtSignal(int,float)
     _quitServent = pyqtSignal(int)
-    _newRequest = pyqtSignal(int,int,int)
     Model = 1
 
     def __init__(self):
@@ -29,9 +28,8 @@ class communicate(QObject):
 
     #------local setting functions
     def AC_Req(self,Positive,Wind_Level):
-        print("get new request")
-        self._newRequest.emit(105,int(Positive),int(Wind_Level))
-
+        print("in req")
+        print("AC_Req",Positive,Wind_Level)
 
     def Temp_Submit(self,Time,Client_No,Temp):
         self._updateTemp.emit(int(Client_No),float(Temp))
@@ -51,7 +49,7 @@ class communicate(QObject):
 
             node = root.getElementsByTagName("Wind_Level")
             Wind_Level = node[0].childNodes[0].data
-            
+
             self.AC_Req(Positive,Wind_Level)
 
         if(root.nodeName == "Temp_Submit"):

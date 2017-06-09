@@ -4,7 +4,7 @@ from PyQt5.QtCore import *
 
 class Sensor:
     init_interval = 1000#一分钟更新一次还是怎样。。。
-    rate = 0.01#风速变化快慢（快了调小）
+    rate = 0.005#风速变化快慢（快了调小）
     def __init__(self, servent):
         # 定时器
         self.timer = QTimer()
@@ -33,13 +33,13 @@ class Sensor:
         elif(self.servent.sysW==3):
             self.wind_lv = 1.3
         #根据模式假定风温外温
-        if (self.servent.sysModel == 0):
-            self.wind_temp = 15
+        if (self.servent.sysModel == 0):#制冷
+            self.wind_temp = 22
             self.extern_temp = 35
-        elif (self.servent.sysModel == 1):
-            self.wind_temp = 35
+        elif (self.servent.sysModel == 1):#制热
+            self.wind_temp = 28
             self.extern_temp = 15
-        #温度向外温靠近+向风温靠近（4倍风速比率补正）
-        sT = self.servent.sysT + 4*self.rate*self.wind_lv*(self.wind_temp-self.servent.sysT) + \
+        #温度向外温靠近+向风温靠近（6倍风速比率补正）
+        sT = self.servent.sysT + 6*self.rate*self.wind_lv*(self.wind_temp-self.servent.sysT) + \
                             self.rate*(self.extern_temp-self.servent.sysT)
         self.servent.update_rt(sT)
