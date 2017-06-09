@@ -12,6 +12,8 @@ class communicate(QObject):
     _newServent = pyqtSignal(int,str)
     _updateTemp = pyqtSignal(int,float)
     _quitServent = pyqtSignal(int)
+    _newRequest = pyqtSignal(int,int,int)
+    Model = 1
 
     def __init__(self):
         super().__init__()
@@ -27,8 +29,9 @@ class communicate(QObject):
 
     #------local setting functions
     def AC_Req(self,Positive,Wind_Level):
-        print("in req")
-        print("AC_Req",Positive,Wind_Level)
+        print("get new request")
+        self._newRequest.emit(105,int(Positive),int(Wind_Level))
+
 
     def Temp_Submit(self,Time,Client_No,Temp):
         self._updateTemp.emit(int(Client_No),float(Temp))
@@ -119,8 +122,8 @@ class communicate(QObject):
                 self.socket_list.remove((conn,addr))
 
     #------message sending functions
-    def Login_ACK(self,no,Succeed,Name,Password,Mode):
-        print(no,Succeed,Name,Password,Mode)
+    def Login_ACK(self,no,Succeed,Name,Password):
+        print(no,Succeed,Name,Password)
         doc = Dom.Document()
         root = doc.createElement("Login_ACK")
 
@@ -141,7 +144,7 @@ class communicate(QObject):
         root.appendChild(node_Password)
 
         node_Mode = doc.createElement("Mode")
-        node_Mode.appendChild(doc.createTextNode(str(Mode)))
+        node_Mode.appendChild(doc.createTextNode(str(self.Model)))
         root.appendChild(node_Mode)
 
         self.send(no, str(len(root.toxml()) + 1) + root.toxml())
@@ -258,4 +261,4 @@ if __name__ == "__main__":
         time.sleep(5)
         server.Temp_Submit_Freq(5)
         inp = input("press ENTER to send ACK")
-        server.Login_ACK(103,1,"frank","123456789","1")
+        server.Login_ACK(103,1,"frank","123456789")
