@@ -11,6 +11,9 @@ from PyQt5.QtWidgets import QWidget
 class communicate(QObject):
     _haslogged = pyqtSignal(int,str,str,int)
     wind_change_ac = pyqtSignal(int,int)
+    temp_freq_change = pyqtSignal(int)
+    fare_info_change = pyqtSignal(float,float)
+
     def __init__(self):
         super().__init__()
         print("client")
@@ -84,9 +87,11 @@ class communicate(QObject):
         pass
 
     def Fare_Info(self,Fare,Energy):
+        self.fare_info_change.emit(float(Fare),float(Energy))
         pass
 
     def Temp_Submit_Freq(self,Temp_Submit_Freq):
+        self.temp_freq_change.emit(int(Temp_Submit_Freq))
         pass
 
     # ------info processing functions

@@ -2,7 +2,6 @@
 from M_database import cursor,db_lock,db
 import datetime
 import threading
-from models.main.ControlPanel import cur_model
 from PyQt5.QtCore import pyqtSignal,QObject
 from server import server
 que_lock = threading.Lock()
@@ -11,14 +10,11 @@ RoomNolist=[]
 AliveRoomNolist=[]
 
 class SubMatch:
-    def __init__(self,roomNo):
-        self.ID=""
+    def __init__(self,roomNo,name):
+        self.ID=name
         self.status=False
         self.switchcnt=0
-        if cur_model == 0:
-            self.temp = 28.00
-        else:
-            self.temp = 22.00
+        self.temp = 0.00
         self.velocity=0
         self.RoomNo=roomNo
         self.isalive=1
@@ -117,22 +113,33 @@ class SubMatch:
         db_lock.release()  # 释放锁
         print("change velocity of room %d complete" % (self.RoomNo))
 
-  ################根据从机号和当前日期从从机状态表里找到对应的花销消耗，输出二元组列表，不存活的就弄成0########
-    def setCost(self):
-        if self.isalive == 0:
-            self.cost= 0.00
-            self.energy = 0
-        else:
-            sql = "SELECT cost,energy FROM servent_stat where room_no='%d' and date=curdate()"
-            data = self.RoomNo
-            # 互斥访问，预防并发访问时游标被占用，结果出错
-            db_lock.acquire()
-            cursor.execute(sql % data)
-            for row in cursor.fetchall():
-                self.cost = row[0]
-                self.energy = row[1]
-                print(row)
-            db_lock.release()  # 释放锁
+  ################根据由于断开连接而认为从机关机########
+    def addSwitch_cnt(self):
+        self.isdie()
+        self.cost= 0.00
+        self.energy = 0
+        sql = "update servent_stat set switch_cnt = switch_cnt+1 where room_no='%d' and date=curdate()" % (self.RoomNo)
+        # 互斥访问，预防并发访问时游标被占用，结果出错
+        print(sql)
+        db_lock.acquire()
+        cursor.execute(sql)
+        db.commit()
+        db_lock.release()  # 释放锁
+        print("关机次数更新完成")
+
+    #########修改connection表的连接状态表示alive###################
+    def isdie(self):
+        self.isalive = 0
+        date = datetime.datetime.now()
+        start = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
+        end = datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
+        db_lock.acquire()
+        sql = "UPDATE connection SET is_alive=0 WHERE room_no=%d and login_time between '%s' and '%s'" % (
+        self.RoomNo, start, end)
+        cursor.execute(sql)
+        db.commit()
+        db_lock.release()
+
     ############监视界面需要的信息，输出五元组列表#######
     def getSub(self):
         list=[self.RoomNo,self.ID,self.isalive,self.temp,self.velocity]
@@ -143,6 +150,18 @@ class SubMatch:
         list=[self.cost,self.energy]
         print(list)
         return list
+
+    def addCost(self,delmonye, deleng):
+        self.cost+=delmonye
+        self.energy+=deleng
+        db_lock.acquire()
+        sql = "UPDATE servent_stat SET cost=cost+%f, energy=energy+%f WHERE room_no='%d' and date=curdate()"\
+              % (delmonye,deleng,self.RoomNo)
+        print(sql)
+        cursor.execute(sql)
+        db.commit()
+        db_lock.release()
+
 
 class queueMaintance(QObject):
     def __init__(self):
@@ -170,21 +189,24 @@ class queueMaintance(QObject):
         que_lock.release()
 
     def deleteItem(self,roomno):
+        print("将关闭从机%d" % (roomno))
         que_lock.acquire()
         for x in queue:
             if x.RoomNo==roomno:
+                x.addSwitch_cnt()
                 queue.remove(x)
         que_lock.release()
 
     #登陆后创建一个新的从机实例
-    def newServent(self,roomNo):
+    def newServent(self,roomNo,name):
         print("创建一个新从机")
-        SubMatch(roomNo)
+        SubMatch(roomNo,name)
 
 
 queueMain = queueMaintance()
 server._updateTemp.connect(queueMain.update_temp)
 server._newServent.connect(queueMain.newServent)
+server._quitServent.connect(queueMain.deleteItem)
 ''''
 #######从数据表找到从机号######
 def getRoomNo():
