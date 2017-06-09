@@ -35,22 +35,22 @@ class Request:
             print("No request from this room")
         else:
             time = row[0]
-        endtime = datetime.now()
-        sqlquery = "update request set e_time = '%s',e_temp = %s,e_wind_level = %s where room_no = %s and s_time = '%s'" % (str(endtime),str(temp),str(windLevel),str(roomNo),str(time))
-        db_lock.acquire()
-        cursor.execute(sqlquery)
-        db_lock.release()
-
-        #添加新请求
-        def newRequest(self,roomNo,temp,windLevel):
-            time = datetime.now()
-            #终止上个请求
-            self.endRequest(roomNo,temp,windLevel)
-            sqlquery = "insert into request(room_no,s_temp,s_wind_level,s_time,cost) values(%s,%s,%s,%s,0)" % (str(roomNo),str(temp),str(windLevel),str(time))
-            print(sqlquery)
+            endtime = datetime.now()
+            sqlquery = "update request set e_time = '%s',e_temp = %s,e_wind_level = %s where room_no = %s and s_time = '%s'" % (str(endtime),str(temp),str(windLevel),str(roomNo),str(time))
             db_lock.acquire()
             cursor.execute(sqlquery)
             db_lock.release()
+
+    #添加新请求
+    def newRequest(self,roomNo,temp,windLevel):
+        time = datetime.now()
+        #终止上个请求
+        self.endRequest(roomNo,temp,windLevel)
+        sqlquery = "insert into request(room_no,s_temp,s_wind_level,s_time,cost) values(%s,%s,%s,'%s',0)" % (str(roomNo),str(temp),str(windLevel),str(time))
+        print(sqlquery)
+        db_lock.acquire()
+        cursor.execute(sqlquery)
+        db_lock.release()
 
     #获得所有房号
     def getRoomNo(self):
@@ -63,4 +63,5 @@ class Request:
         while(row != None):
             room.append(row[0])
             row = cursor.fetchone()
+        db_lock.release()
         return room

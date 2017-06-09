@@ -2,30 +2,29 @@
 
 from  datetime  import  *
 from S_DBFacade import db_lock,cursor,db
-
+from controller.servent.S_LoginController import RoomNo
 myroom = object
 
 class S_servent :
     def __init__(self,U,P,M):
-        self.roomNo = 105  #这个地方的默认数据记得修改呀！！！！
+        self.roomNo = RoomNo  #这个地方的默认数据记得修改呀！！！！
         self.targetT = 28.0
         self.targetW = 0
         self.sysT = 18.0
         self.sysW = 2
         self.sysModel = M
-        ''''
+
         #根据系统工作模式调整室温初态
         if self.sysModel == 1: #冬季，制热
-            self.targetT = 22.0
-            self.sysT = 28.0
-        else:
             self.targetT = 28.0
-            self.sysT = 22.0
-        '''
+            self.sysT = 18.0
+        else:
+            self.targetT = 18.0
+            self.sysT = 28.0
         self.loggedOn = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.eng_cost = 0.00
         self.money_cost = 0.00
-        self.start_blowing = 1
+        self.start_blowing = 0
 
         self.usr = U
         self.pwd = P
