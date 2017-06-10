@@ -12,6 +12,7 @@ class communicate(QObject):
     _newServent = pyqtSignal(int,str)
     _updateTemp = pyqtSignal(int,float)
     _quitServent = pyqtSignal(int)
+    _stopRR = pyqtSignal()
     _newRequest = pyqtSignal(int,int,int)
     _algorithmActivate=pyqtSignal()
     Model = 1
@@ -92,12 +93,12 @@ class communicate(QObject):
             print("data:",data)
 
     def connection_lost(self,no):
-
         try:
             soc = self.room_dict[no]
             del self.room_dict[no]
             del self.socket_dict[soc]
             self.socket_list.remove(soc)
+            #self._stopRR.emit()
             self._quitServent.emit(int(no))
         except:
             print("connection to %d already closed." % (int(no)))

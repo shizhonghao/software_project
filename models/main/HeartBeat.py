@@ -21,7 +21,6 @@ class HeartBeat:
 
         #记下作为心跳操作目标的从机状态类
         self.target = queue
-        print('timer set')
         self.timer.timeout.connect(self.to_servent)
 
     def to_servent(self):

@@ -9,6 +9,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 from controller.main import M_SubStatusController
+from PyQt5.QtCore import QTimer
 import time  ##测试用
 
 
@@ -18,6 +19,11 @@ class Ui_SubMonitor(object):
         self.sub = M_SubStatusController.SubStatuController()
 
     def setupUi(self, MainWindow):
+        self.reflashTimer = QTimer()
+        self.reflashTimer.setInterval(1000)
+        self.reflashTimer.timeout.connect(self.updateData)
+        self.reflashTimer.start()
+
         self.SubMonitor = QWidget(MainWindow)
         self.SubMonitor.setObjectName("SubMonitor")
         self.SubMonitor.resize(990, 500)
@@ -48,10 +54,10 @@ class Ui_SubMonitor(object):
         ###加for循环，room数####
         x=0
         self.messagelist=self.sub.showSub()
-        print(self.messagelist)
+        #print(self.messagelist)
         while x<len(self.messagelist):
         ###while x <3:
-            print("a")
+            #print("a")
             self.roomnoLabel = QtWidgets.QLabel()
             self.idLabel=QtWidgets.QLabel()
             self.statuLabel = QtWidgets.QLabel()
@@ -98,57 +104,43 @@ class Ui_SubMonitor(object):
     def updateData(self):
         del self.messagelist[:]
         x = self.stack.count()
-        print("xxxxxxx", x)
+        #print("xxxxxxx", x)
         if (x != 0):
             i = 0
             while i < x:
                 test = self.stack.widget(i)
                 self.stack.removeWidget(test)
                 test.destroy()
-                print("enenene")
+                #print("enenene")
                 i += 1
                 x = self.stack.count()
-                print("xxxxxxx", x)
+                #print("xxxxxxx", x)
         x = self.stack.count()
-        print("xxxxxxx", x)
+        #print("xxxxxxx", x)
         showWidget = QWidget(self.SubMonitor)
         showWidget.resize(800, 400)
-        print("##############33333")
-        self.messagelist = self.sub.showSub()
-        str = time.asctime()
-        list = [1, str, 3, 4, 5]
-        self.messagelist.append(list)
-        print("hhhhhh")
-        print(self.messagelist)
+        self.messagelist =[['房间号', '用户名', '送风中', '房间温度', '目标风速']]
+        self.messagelist.extend(self.sub.showSub())
 
         listlayout1 = QtWidgets.QVBoxLayout(showWidget)  ##垂直排列
         ###加for循环，room数####
         x = 0
         # self.messagelist = self.sub.showSub()
-        # print(self.messagelist)
+        # #print(self.messagelist)
         while x < len(self.messagelist):
             ###while x <3:
-            print("a")
+            #print("a")
             roomnoLabel = QtWidgets.QLabel()
             idLabel = QtWidgets.QLabel()
             statuLabel = QtWidgets.QLabel()
             tempLabel = QtWidgets.QLabel()
             veloLabel = QtWidgets.QLabel()
 
-            ###test过后删除###
-            '''
-            self.roomnoLabel.setText("No.1")
-            self.idLabel.setText("xx")
-            self.statuLabel.setText("工作中")
-            self.tempLabel.setText("33℃")
-            self.veloLabel.setText("中速")
-            '''
-
-            roomnoLabel.setNum(self.messagelist[x][0])
+            roomnoLabel.setText(self.messagelist[x][0])
             idLabel.setText(self.messagelist[x][1])
-            statuLabel.setNum(self.messagelist[x][2])
-            tempLabel.setNum(self.messagelist[x][3])
-            veloLabel.setNum(self.messagelist[x][4])
+            statuLabel.setText(self.messagelist[x][2])
+            tempLabel.setText(self.messagelist[x][3])
+            veloLabel.setText(self.messagelist[x][4])
 
             rowlayout = QtWidgets.QHBoxLayout()
             rowlayout.addWidget(roomnoLabel)
@@ -164,7 +156,7 @@ class Ui_SubMonitor(object):
         self.stack.addWidget(showWidget)
         # self.stack.setCurrentWidget(showWidget)
         x = self.stack.count()
-        print("xxxxxxx", x)
+        #print("xxxxxxx", x)
 
 
 

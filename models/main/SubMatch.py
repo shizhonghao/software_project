@@ -148,7 +148,7 @@ class SubMatch:
 
     ############监视界面需要的信息，输出五元组列表#######
     def getSub(self):
-        list=[self.RoomNo,self.ID,self.isalive,self.temp,self.velocity]
+        list=[str(self.RoomNo),self.ID,str(self.start_blowing),"%.2f"%(self.temp),str(self.velocity)]
         print(list)
         return list
     ##########从机请求需要的钱和能量，输出二元组列表######
@@ -195,6 +195,16 @@ class queueMaintance(QObject):
                 Request.newRequest(Request(), one.RoomNo, one.temp, one.velocity * one.start_blowing)
                 #改变从机目标风速,若申请停风，则应该是0
                 one.setWindLev(windLev*start_blowing)
+                break
+        que_lock.release()
+
+    def update_blowing(self,roomNo,start_blowing):
+        que_lock.acquire()
+        #找到要修改的从机
+        for one in queue:
+            if(one.RoomNo == roomNo):
+                print("to change blowing of %d" % (one.RoomNo))
+                one.setStartBlowing(start_blowing)
                 break
         que_lock.release()
 
