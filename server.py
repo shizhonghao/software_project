@@ -91,11 +91,10 @@ class communicate(QObject):
 
     def connection_lost(self,no):
         soc = self.room_dict[no]
-        '''
         del self.room_dict[no]
         del self.socket_dict[soc]
         self.socket_list.remove(soc)
-        '''
+
         self._quitServent.emit(int(no))
         pass
 

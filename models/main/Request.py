@@ -65,3 +65,50 @@ class Request:
             row = cursor.fetchone()
         db_lock.release()
         return room
+
+    #获得房间的开机次数
+    def getSwitchCnt(self,roomNo,sdate,edate):
+        sqlquery = "SELECT SUM(SWITCH_CNT) FROM SERVENT_STAT WHERE ROOM_NO = %s AND DATE BETWEEN '%s' AND '%s' GROUP BY ROOM_NO"%(str(roomNo),sdate,edate)
+        print(sqlquery)
+        db_lock.acquire()
+        cursor.execute(sqlquery)
+        row = cursor.fetchone()
+        db_lock.release()
+        switchCnt = 0
+        if(row is None):
+            print("No such room")
+        else:
+            switchCnt = int(row[0])
+        return switchCnt
+
+    #获得房间的总费用
+    def getCost(self,roomNo,sdate,edate):
+        sqlquery = "SELECT SUM(a.COST) FROM (select cost from servent_stat where room_no = %s and date between '%s' and '%s') as a"  % (str(roomNo),sdate,edate)
+        print(sqlquery)
+        db_lock.acquire()
+        cursor.execute(sqlquery)
+        row = cursor.fetchone()
+        print(row)
+        db_lock.release()
+        cost = 0
+        if(row[0] is None):
+            print("No such room")
+        else:
+            cost = row[0]
+        return cost
+
+    #得到请求信息
+    def getRequest(self,roomNo,sdate,edate):
+        sqlquery = "SELECT * FROM REQUEST WHERE ROOM_NO = %s AND S_TIME BETWEEN '%s 00:00:00' AND '%s 00:00:00'" % (str(roomNo),sdate,edate)
+        print(sqlquery)
+        db_lock.acquire()
+        cursor.execute(sqlquery)
+        row = cursor.fetchone()
+        request = []
+        while(row != None):
+            request.append(row)
+            row = cursor.fetchone()
+        db_lock.release()
+        return request
+      
+
