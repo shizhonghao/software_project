@@ -208,8 +208,10 @@ class Ui_S_Board(QtWidgets.QWidget):
             ww = 'low'
         elif (self.sysW == 2):
             ww = 'mid'
-        else:
+        elif(self.sysW == 3):
             ww = 'high'
+        else:
+            ww = '不送风'
         self.rwshow.setText(ww)
 
     def wind_change(self):

@@ -41,7 +41,6 @@ class HeartBeat:
             elif one.velocity*one.start_blowing == 1:
                 one.addCost(0.8*5.0*w,1.0*w)
                 Request.costUpdate(Request(), one.RoomNo, 0.8 * 5.0 * w)
-            print("add complete")
             toSend.append([one.RoomNo,one.cost,one.energy])
         que_lock.release()
 

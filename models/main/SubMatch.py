@@ -106,9 +106,8 @@ class SubMatch:
         self.start_blowing = start_blowing
 
     ################根据从机号和当前日期从从机状态表里找到对应的行修改其风速，和实例本身的风速########
-    def setWindLev(self, velocity,start_blowing):
+    def setWindLev(self, velocity):
         self.velocity = velocity
-        self.setStartBlowing(start_blowing)
 
         # 互斥访问，预防并发访问时游标被占用，结果出错
         print("change velocity of room %d" % (self.RoomNo))
@@ -119,8 +118,6 @@ class SubMatch:
         db.commit()
         db_lock.release()  # 释放锁
         print("change velocity of room %d complete" % (self.RoomNo))
-        #新的请求
-        Request.newRequest(Request(),self.RoomNo,self.temp,self.velocity*self.start_blowing)
 
   ################根据由于断开连接而认为从机关机########
     def addSwitch_cnt(self):
@@ -188,13 +185,16 @@ class queueMaintance(QObject):
         que_lock.release()
 
     #温控请求对从机实例的风速修改
-    def update_windLev(self,roomNo,windLev,start_blowing):
+    def update_windLev(self,roomNo,start_blowing,windLev):
         que_lock.acquire()
         #找到要修改的从机
         for one in queue:
             if(one.RoomNo == roomNo):
                 print("to add request of %d" % (one.RoomNo))
-                one.setWindLev(windLev,start_blowing)
+                # 新的请求
+                Request.newRequest(Request(), one.RoomNo, one.temp, one.velocity * one.start_blowing)
+                #改变从机目标风速,若申请停风，则应该是0
+                one.setWindLev(windLev*start_blowing)
                 break
         que_lock.release()
 

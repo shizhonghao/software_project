@@ -21,13 +21,14 @@ class Algorithm:
     def Serve(self,target,stop):
         roomNo = target.RoomNo
         windLev = target.velocity
+        target.start_blowing = 1
         if stop == True:
-            windLev = 0
-        start_Blowing = 0
-        if windLev == 0:
-            start_Blowing = 0
+            target.start_blowing = 0
+        if windLev ==0:
+            target.start_blowing = 0
+
         #向房间发送响应结果
-        server.Wind(roomNo,windLev,start_Blowing)
+        server.Wind(roomNo,windLev,target.start_blowing)
 
     def RR(self):
         que_lock.acquire()
@@ -54,6 +55,7 @@ class Algorithm:
         self.RRtimer.stop()
 
     def Priority(self):
+        print("高速风优先")
         #高速风抢占优先
         que_lock.acquire()
         lenQue = len(queue)
@@ -71,7 +73,7 @@ class Algorithm:
         que_lock.release()
 
     def FIFS(self):
-        # 高速风抢占优先
+        # 先来先服务（以该房间最后一次请求的发起时间判断“先”）
         que_lock.acquire()
         lenQue = len(queue)
         if lenQue < 3:  # 队列小于3，响应所有
@@ -83,15 +85,10 @@ class Algorithm:
             tempque = []
             stopque = []
             for one in queue:
-                #from request import ???
-                #records = "select * from request where s_time在今天内   order by s_time"
-                #if records == None:
-                #   continue
-                #else:
-                #   lastAt = len(records)
-                #   record = records[lastAt]
-                record=[]
-                if record[6] == 0:# 目标风速为 0
+                record = []#当前房间最后一次请求的时间
+                '''
+              '''
+                if one.velocity == 0:# 目标风速为 0
                     stopque.append(one)
                     continue#则跳过
                 #将一个未停风的请求和时间放入列表
@@ -109,14 +106,15 @@ class Algorithm:
 
     #对外接口：激活一次调度算法
     def activate(self):
+        print("to activate algorithm")
         if self.algorithm == 1:
             if self.is_RR == True:#RR算法不同于其他，不需要反复激活
                 return
             else:
-                self.is_RR = True
+                self.is_RR = True#若未激活，则考虑激活（应该在界面上选择算法后改变）
                 self.startRR()
         else:
-            if self.is_RR == True:#RR算法不同于其他，不需要反复激活
+            if self.is_RR == True:#RR算法若已经启动，需要先停下来
                 self.stopRR()
                 self.is_RR = False
             if self.algorithm == 2:
@@ -126,3 +124,4 @@ class Algorithm:
 
 
 currentAlgorithm = Algorithm()
+server._algorithmActivate.connect(currentAlgorithm.activate)

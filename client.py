@@ -127,7 +127,7 @@ class communicate(QObject):
             node = root.getElementsByTagName("Start_Blowing")
             Start_Blowing = node[0].childNodes[0].data
 
-            self.Login_ACK(Level,Start_Blowing)
+            self.Wind(Level,Start_Blowing)
 
         if (root.nodeName == "Fare_Info"):
             node = root.getElementsByTagName("Fare")
