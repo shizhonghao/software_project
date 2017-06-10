@@ -111,4 +111,17 @@ class Request:
         db_lock.release()
         return request
       
-
+    #获得最近一次请求的时间
+    def getLatestRequest(self,roomNo):
+        sqlquery = "select max(a.s_time) from (select * from request where room_no = %s) as a" % (str(roomNo))
+        print(sqlquery)
+        db_lock.acquire()
+        cursor.execute(sqlquery)
+        row = cursor.fetchone()
+        db_lock.release()
+        time = ""
+        if(row[0] == None):
+            print("no request from this room")
+        else:
+            time = str(row[0])
+        return time
