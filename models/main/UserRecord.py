@@ -42,15 +42,14 @@ class UserRecord(QObject):
                 print("insert done")
             else:
                 print("room exists")
-                '''
-                sql = "ALTER TABLE connection SET is_alive = 1, login_time='%s' WHERE room_no=%d and login_time between '%s' and '%s'" % (date,int(Room_No), start,end)
-                db_lock.acquire()
+                sql = "UPDATE connection SET is_alive=1 WHERE room_no=%d and name='%s' and pwd='%s'and " \
+                      "login_time between '%s' and '%s'" % (int(Room_No), Name, Password, start, end)
                 print(sql)
+                db_lock.acquire()
                 cursor.execute(sql)
                 db.commit()
                 db_lock.release()
-                print("alter done")
-                '''
+                print("update done")
             #return True
 
     def insertmes(self,name,pwd):

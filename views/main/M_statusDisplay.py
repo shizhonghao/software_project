@@ -9,7 +9,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 from controller.main import M_StatusController
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal,QTimer
 
 class Ui_StatusDisplay(QWidget):
 
@@ -24,6 +24,11 @@ class Ui_StatusDisplay(QWidget):
     mstatus=""
 
     def setupUi(self, MainWindow):
+        self.reflashTimer = QTimer()
+        self.reflashTimer.setInterval(2000)
+        self.reflashTimer.timeout.connect(self.showMes)
+        self.reflashTimer.start()
+
         self.StatusDisplay=QWidget(MainWindow)
         self.StatusDisplay.setObjectName("StatusDisplay")
         self.StatusDisplay.resize(990, 500)
@@ -109,6 +114,7 @@ class Ui_StatusDisplay(QWidget):
         QtCore.QMetaObject.connectSlotsByName(self.StatusDisplay)
 
     def on_tellmeButton_clicked(self):
+        print("radio changed")
         if (self.radioButton.isChecked()):
             self.controller.strat=1
         if (self.radioButton_2.isChecked()):
@@ -158,16 +164,13 @@ class Ui_StatusDisplay(QWidget):
         self.statuLabel.setText(self.mstatus)
 
         list=self.controller.getConnec()
-        print("slslslslsl")
-        print(list)
         x=0
         connecstr=""
         while x<len(list):
             connecstr+=str(list[x])
             connecstr+="\n"
             x+=1
-        print(connecstr)
-        #self.roomLabel.setText(connecstr)
+        self.roomLabel.setText(connecstr)
         #####刷新测试
         #self.roomLabel.setNum(time.clock())
 

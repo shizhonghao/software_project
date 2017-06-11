@@ -9,7 +9,7 @@ class S_servent :
     def __init__(self,U,P,M):
         self.roomNo = RoomNo  #这个地方的默认数据记得修改呀！！！！
         self.targetT = 28.0
-        self.targetW = 0
+        self.targetW = 3
         self.sysT = 18.0
         self.sysW = 2
         self.sysModel = M
@@ -38,7 +38,7 @@ class S_servent :
         self.sysModel = M
         self.updatesys_deal(self.roomNo, self.loggedOn, T, W, M)               #数据库同步修改
 
-    def update_cost(self,EC,MC):
+    def update_cost(self,MC,EC):
         self.eng_cost = EC
         self.money_cost = MC
         self.updatecost_deal(self.roomNo, self.loggedOn, EC, MC)                #数据库同步修改
@@ -51,7 +51,7 @@ class S_servent :
     def update_rw(self,sW,sb):
         self.sysW=sW
         self.start_blowing=sb
-        self.updaterw_deal(self.roomNo, self.loggedOn, sW)
+        self.updaterw_deal(self.roomNo, self.loggedOn, sW,sb)
 
     def ret_current_state(self):
         return self.roomNo, self.targetT, self.targetW, self.sysT, self.sysW, self.sysModel, self.loggedOn, self.eng_cost, self.money_cost, self.start_blowing
@@ -98,6 +98,7 @@ class S_servent :
 
     def updaterw_deal(self,roomNo, loggedOn, W, sb):
         sql = "update clientinfo set sysW=%d, start_blowing=%d where roomNo = %d and loggedOn = '%s'" % (W, sb, roomNo, loggedOn)
+        print(sql)
         db_lock.acquire()
         cursor.execute(sql)
         db.commit()

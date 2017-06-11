@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from M_database import cursor, db_lock
+from models.main.Algorithm import currentAlgorithm
 from server import server
 import datetime,time
 from PyQt5.QtCore import QObject
@@ -25,6 +26,7 @@ class ControlPanel(QObject):
             server.Model = 1
 ##########设置在线从机号#####
     def setConnec(self):
+        self.connec=[]
         sql = "select room_no from connection where is_alive=1"
         cursor.execute(sql)
         # 互斥访问，预防并发访问时游标被占用，结果出错
@@ -33,7 +35,7 @@ class ControlPanel(QObject):
             print(row)
             self.connec.append(row[0])
         db_lock.release()  # 释放锁
-        print('共查找出hhhhhhh', cursor.rowcount, '条数据')
+        #print('共查找出hhhhhhh', cursor.rowcount, '条数据')
         print(self.connec)
 ##########根据控制器传的数值设置工作频率#####
     def setFreq(self,freq):
@@ -42,9 +44,12 @@ class ControlPanel(QObject):
 ##########根据控制器传的数值设置策略#########
     def setStrat(self,strat):
         self.strat=strat
-        print(self.strat)
+        currentAlgorithm.changeAlgorithm(strat)
+
+        #print(self.strat)
 #########返回信息#########
     def getConnec(self):
+        self.setConnec()
         return self.connec
 
     def getFreq(self):
