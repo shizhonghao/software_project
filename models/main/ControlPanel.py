@@ -9,8 +9,8 @@ class ControlPanel(QObject):
     curmonth = int(time.strftime("%m", time.localtime()))
     def __init__(self):
         super().__init__()
-        self.freq=50  ########默认初始值，过后要改
-        server.freq = 50
+        self.freq=5  ########默认初始值，过后要改
+        server.freq = 5
         self.strat=1 ######默认初始值，策略
         self.connec=[]  #####当前连接房间
         self.statu=0  ########工作模式，0为制冷，1为制热，默认制冷

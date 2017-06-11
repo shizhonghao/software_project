@@ -153,7 +153,7 @@ class communicate(QObject):
             xml = data[head_len:head_len + xml_len]
             print("xml:", xml)
             self.parse(xml)
-            data = data[1 + head_len + xml_len:]
+            data = data[head_len + xml_len:]
             print("data:", data)
 
     def send(self, info):

@@ -16,7 +16,7 @@ class communicate(QObject):
     _newRequest = pyqtSignal(int,int,int)
     _algorithmActivate=pyqtSignal()
     Model = 1
-    freq = 30
+    freq = 3
 
     def __init__(self):
         super().__init__()
@@ -90,7 +90,7 @@ class communicate(QObject):
             xml = data[head_len:head_len+xml_len]
             print("xml:",xml)
             self.parse(xml,conn,addr)
-            data = data[1+head_len+xml_len:].lstrip()
+            data = data[head_len+xml_len:].lstrip()
             print("data:",data)
 
     def connection_lost(self,no):
