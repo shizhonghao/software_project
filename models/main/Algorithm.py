@@ -10,7 +10,7 @@ import datetime
 class Algorithm:
     ##轮转算法用：定时器、时间片大小、起点
     RRtimer = QTimer()
-    RR_interval = 1000#轮转时间片
+    RR_interval = 4000#轮转时间片
     RR_head = 0
     is_RR = False
     algorithm = 1

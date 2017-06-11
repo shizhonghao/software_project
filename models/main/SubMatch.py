@@ -110,7 +110,7 @@ class SubMatch:
         self.velocity = velocity
 
         # 互斥访问，预防并发访问时游标被占用，结果出错
-        print("change velocity of room %d" % (self.RoomNo))
+        print("change velocity of room %d as %d" % (self.RoomNo,self.velocity))
         db_lock.acquire()
         sql = "update servent_stat set wind_level=%d where room_no='%d' and date=curdate()" \
               % (self.velocity, self.RoomNo)

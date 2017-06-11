@@ -4,7 +4,7 @@ from client import c
 from PyQt5.QtCore import pyqtSignal,QObject
 
 class S_BoardController(QObject):
-    _modelchanged = pyqtSignal()
+    _modelchanged = pyqtSignal(bool)
     sendcnt = 0
 
     def __init__(self,servent):
@@ -35,19 +35,19 @@ class S_BoardController(QObject):
         self.servent.update_cost(Fare,Energy)
 
     def Model_Change_deal(self,Heater):
-        print("收到模式切换")
+
         if(self.servent.sysModel != Heater): #仅当当前从机记录的工作模式与广播不符合的时候才变化
             # 根据系统工作模式调整从机目标温度
-            if self.Heater == 1 and self.targetT<25:  # 冬季，制热
+            if Heater == 1:  # 冬季，制热
                 self.targetT = 28.0
-                self.targetW = 0
-                self._modelchanged.emit()
-            elif self.Heater == 0 and self.targetT>25:
+                self.servent.update_sys(self.targetT, self.targetW, Heater)
+                self._modelchanged.emit(True)
+            elif Heater == 0:
                 self.targetT = 22.0
-                self.targetW = 0
-                self._modelchanged.emit()
-            
-            self.servent.update_sys(self.targetT,self.targetW,self.sysModel)
+                self.servent.update_sys(self.targetT, self.targetW, Heater)
+                self._modelchanged.emit(True)
+            print("收到模式切换")
+
 
     #状态查询
     def getCurrentState(self):

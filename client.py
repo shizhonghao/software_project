@@ -121,7 +121,7 @@ class communicate(QObject):
             node = root.getElementsByTagName("Heater")
             Heater = node[0].childNodes[0].data
 
-            #self.Login_ACK(Heater)
+            self.Mode(Heater)
 
         if (root.nodeName == "Wind"):
             node = root.getElementsByTagName("Level")

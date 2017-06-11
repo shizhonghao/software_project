@@ -30,6 +30,7 @@ class ControlPanel(QObject):
             self.statu = Model
             server.Model = Model
         print("now status is ",self.statu)
+        server.Mode_B(self.statu)
 
 ##########在线从机记录清除（对付上次崩溃）#####
     def clearConnec(self):
