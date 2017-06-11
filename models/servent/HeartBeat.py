@@ -7,19 +7,21 @@ class HeartBeat:
     init_interval = 1000
     current_interval = 0
 
-    def __init__(self,servent):
+    def __init__(self):
         #定时器
         self.timer = QTimer()
         self.timer.setInterval(self.init_interval)
-        self.timer.start()
 
         #记下作为心跳操作目标的从机状态类
-        self.target = servent
+        self.target = None
         print('timer set')
         self.timer.timeout.connect(self.state_update)
         c.temp_freq_change.connect(self.freq_change)
 
     def state_update(self):
+        if self.target == None:
+            return
+        print("current freq is:",self.current_interval)
         #做状态更新
         '''
         2.	温度上报（心跳）（开机时间）
@@ -45,4 +47,8 @@ class HeartBeat:
         if Temp_Submit_freq!=self.current_interval:
             self.current_interval = Temp_Submit_freq
             self.timer.setInterval(self.current_interval*100)
+            self.timer.start()
             print("freq changed as %d"%(Temp_Submit_freq))
+
+    def setServent(self,target):
+        self.target = target

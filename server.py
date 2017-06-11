@@ -16,6 +16,7 @@ class communicate(QObject):
     _newRequest = pyqtSignal(int,int,int)
     _algorithmActivate=pyqtSignal()
     Model = 1
+    freq = 30
 
     def __init__(self):
         super().__init__()
@@ -158,6 +159,7 @@ class communicate(QObject):
         root.appendChild(node_Mode)
 
         self.send(no, str(len(root.toxml()) + 1) + root.toxml())
+        self.Temp_Submit_Freq(int(no),self.freq)
 
     def Mode(self,no,Heater):
         doc = Dom.Document()

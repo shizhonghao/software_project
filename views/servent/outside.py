@@ -53,6 +53,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.heart = HeartBeat.HeartBeat()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -83,7 +84,7 @@ class Ui_MainWindow(object):
         # 初始化一个servent,修改py文件中的单例指向这个实例
         myroom = S_servent(Name,Password,Mode)
         print(myroom.usr)
-        self.heart = HeartBeat.HeartBeat(myroom)
+        self.heart.setServent(myroom)
         self.sensor = Sensor.Sensor(myroom)
         # 新建信息显示界面
         self.boardwidget = Ui_S_Board()
