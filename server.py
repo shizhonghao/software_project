@@ -12,7 +12,9 @@ class communicate(QObject):
     _newServent = pyqtSignal(int,str)
     _updateTemp = pyqtSignal(int,float)
     _quitServent = pyqtSignal(int)
+    _stopRR = pyqtSignal()
     _newRequest = pyqtSignal(int,int,int)
+    _algorithmActivate=pyqtSignal()
     Model = 1
 
     def __init__(self):
@@ -31,6 +33,7 @@ class communicate(QObject):
     #------local setting functions
     def AC_Req(self,room_no,Positive,Wind_Level):
         self._newRequest.emit(int(room_no),int(Positive),int(Wind_Level))
+        self._algorithmActivate.emit()
 
     def Temp_Submit(self,Time,Client_No,Temp):
         self._updateTemp.emit(int(Client_No),float(Temp))
@@ -90,12 +93,15 @@ class communicate(QObject):
             print("data:",data)
 
     def connection_lost(self,no):
-        soc = self.room_dict[no]
-        del self.room_dict[no]
-        del self.socket_dict[soc]
-        self.socket_list.remove(soc)
-
-        self._quitServent.emit(int(no))
+        try:
+            soc = self.room_dict[no]
+            del self.room_dict[no]
+            del self.socket_dict[soc]
+            self.socket_list.remove(soc)
+            #self._stopRR.emit()
+            self._quitServent.emit(int(no))
+        except:
+            print("connection to %d already closed." % (int(no)))
         pass
 
     def send(self,no,info):  # no can be a room number or a socket(before Login_ACK)

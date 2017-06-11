@@ -12,6 +12,7 @@ class StatusController:
         self.new.setFreq(self.freq)
 
     def changeStrat(self):
+        #print("set strat as %d"%(self.strat))
         self.new.setStrat(self.strat)
 
     def getConnec(self):
