@@ -120,6 +120,7 @@ class M_MainWindow(object):
         self.stack.setCurrentWidget(self.defaultWidget.StatusDisplay)
 
     def setReportWidget(self):
+        self.reportWidget.iniUiReport()
         self.stack.setCurrentWidget(self.reportWidget.Report)
 
     def setInsertWidget(self):

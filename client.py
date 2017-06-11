@@ -13,13 +13,14 @@ class communicate(QObject):
     wind_change_ac = pyqtSignal(int,int)
     temp_freq_change = pyqtSignal(int)
     fare_info_change = pyqtSignal(float,float)
+    _model_change = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
         print("client")
         #super(QWidget,self).__init__()
         print("client init")
-        self.HOST, self.PORT = "192.168.43.234", 9999#"localhost",9999 #
+        self.HOST, self.PORT = "localhost", 9999#"localhost",9999 #
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # Connect to server and send data
         self.sock.connect((self.HOST, self.PORT))
@@ -81,6 +82,7 @@ class communicate(QObject):
         self._haslogged.emit(int(Succeed),Name,Password,int(Mode))
 
     def Mode(self,Heater):
+        self._model_change.emit(int(Heater))
         pass
 
     def Wind(self,Level,Start_Blowing):
@@ -119,7 +121,7 @@ class communicate(QObject):
             node = root.getElementsByTagName("Heater")
             Heater = node[0].childNodes[0].data
 
-            #self.Login_ACK(Heater)
+            self.Mode(Heater)
 
         if (root.nodeName == "Wind"):
             node = root.getElementsByTagName("Level")

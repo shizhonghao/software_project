@@ -10,16 +10,16 @@ class S_servent :
         self.roomNo = RoomNo  #这个地方的默认数据记得修改呀！！！！
         self.targetT = 28.0
         self.targetW = 3
-        self.sysT = 18.0
+        self.sysT = 20.0
         self.sysW = 2
         self.sysModel = M
 
         #根据系统工作模式调整室温初态
         if self.sysModel == 1: #冬季，制热
             self.targetT = 28.0
-            self.sysT = 18.0
+            self.sysT = 20.0
         else:
-            self.targetT = 18.0
+            self.targetT = 20.0
             self.sysT = 28.0
         self.loggedOn = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.eng_cost = 0.00

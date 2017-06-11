@@ -21,7 +21,7 @@ class communicate(QObject):
     def __init__(self):
         super().__init__()
         self.Freq = 2
-        self.HOST, self.PORT = "192.168.43.80", 9999
+        self.HOST, self.PORT = "localhost", 9999
         self.soc = socket.socket()
         self.soc.bind((self.HOST, self.PORT))
         self.soc.listen(10) #max number of clients listening to
@@ -204,6 +204,7 @@ class communicate(QObject):
         self.broadcast(root.toxml() + '\n')
 
     def Wind(self,no,Level,Start_Blowing):
+        print("send wind %d %d"%(Level,Start_Blowing))
         doc = Dom.Document()
         root = doc.createElement("Wind")
 

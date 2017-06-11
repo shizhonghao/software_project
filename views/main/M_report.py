@@ -38,33 +38,6 @@ class Ui_Report(object):
         self.retranslateUi(self.Report)
         QtCore.QMetaObject.connectSlotsByName(self.Report)
 
-        # 设置当前时间
-        now = datetime.now()
-        self.currentDate[0] = now.year
-        self.currentDate[1] = now.month
-        self.currentDate[2] = now.day + 1
-        self.s_year = now.year
-        self.s_month = now.month
-        self.s_day = now.day
-        if (self.currentDate[1] == 12 and self.currentDate[2] == 32):
-            self.currentDate[0] = now.year + 1
-            self.currentDate[1] = 1
-            self.currentDate[2] = 1
-        elif (self.currentDate[1] == 2):
-            if (now.year % 4 == 0 and self.currentDate[2] == 30):
-                self.currentDate[1] = 3
-                self.currentDate[2] = 1
-            elif (self.currentDate[2] == 29):
-                self.currentDate[1] = 3
-                self.currentDate[2] = 1
-        elif ((self.currentDate[1] == 4 or self.currentDate[1] == 6 or self.currentDate[1] == 9 or self.currentDate[
-            1] == 11) and self.currentDate[2] == 31):
-            self.currentDate[1] = now.month + 1
-            self.currentDate[2] = 1
-        elif (self.currentDate[2] == 32):
-            self.currentDate[2] = 1
-            self.currentDate[1] = now.month + 1
-
         # 时间控件的初始化
         self.dateEdit = QtWidgets.QDateEdit(self.Report)
         self.dateEdit.setGeometry(QtCore.QRect(20, 20, 110, 22))
@@ -74,15 +47,6 @@ class Ui_Report(object):
         self.comboBox = QtWidgets.QComboBox(self.Report)
         self.comboBox.setGeometry(QtCore.QRect(20, 60, 87, 22))
         self.comboBox.setObjectName("comboBox")
-        room = Request.getRoomNo(Request())
-        roomLen = len(room)
-        i = 0
-        if (roomLen != 0):
-            self.currentRoom = room[0]
-        while (i < roomLen):
-            self.comboBox.addItem(str(room[0]))
-            self.room[i] = room[0]
-            i = i + 1
 
         # 写开机次数的标签
         self.label = QtWidgets.QLabel(self.Report)
@@ -92,10 +56,6 @@ class Ui_Report(object):
         self.lineEdit = QtWidgets.QLineEdit(self.Report)
         self.lineEdit.setGeometry(QtCore.QRect(220, 60, 51, 21))
         self.lineEdit.setObjectName("lineEdit")
-        # 设置默认显示时的房间的开机次数
-        if (self.currentRoom != 0):
-            switch_cnt = Request.getSwitchCnt(Request(),self.currentRoom,"%s-%s-%s"%(str(self.s_year),str(self.s_month),str(self.s_day)),"%s-%s-%s"%(str(self.currentDate[0]),str(self.currentDate[1]),str(self.currentDate[2])))
-            self.lineEdit.setText(str(switch_cnt))
 
         # 写着总费用的标签
         self.label_2 = QtWidgets.QLabel(self.Report)
@@ -105,10 +65,6 @@ class Ui_Report(object):
         self.lineEdit_2 = QtWidgets.QLineEdit(self.Report)
         self.lineEdit_2.setGeometry(QtCore.QRect(370, 60, 61, 21))
         self.lineEdit_2.setObjectName("lineEdit_2")
-        # 设置默认显示时的房间总费用
-        if (self.currentRoom != 0):
-            cost = Request.getCost(Request(),self.currentRoom,"%s-%s-%s"%(str(self.s_year),str(self.s_month),str(self.s_day)),"%s-%s-%s"%(str(self.currentDate[0]),str(self.currentDate[1]),str(self.currentDate[2])))
-            self.lineEdit_2.setText(str(cost))
 
         # 用来放所有的记录的表格
         self.tableWidget = QtWidgets.QTableWidget(self.Report)
@@ -122,26 +78,7 @@ class Ui_Report(object):
         self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         # 表格列名设置
         self.tableWidget.setHorizontalHeaderLabels(['房间号', '开始时间', '停止时间', '起始温度', '停止温度', '起始风速', '停止风速', '费用'])
-        # 查询默认显示的房间的所有请求
-        if (self.currentRoom != 0):
-            #sqlquery = "SELECT * FROM REQUEST WHERE ROOM_NO = %s AND S_TIME BETWEEN '%s-%s-%s 00:00:00' AND '%s-%s-%s 00:00:00'" % (
-            #str(self.currentRoom), str(self.s_year), str(self.s_month), str(self.s_day), str(self.currentDate[0]),
-            #str(self.currentDate[1]), str(self.currentDate[2]))
-            #print(sqlquery)
-            #M_database.cursor.execute(sqlquery)
-            #rowCnt = M_database.cursor.rowcount
-            #row = M_database.cursor.fetchone()
-            request = Request.getRequest(Request(),self.currentRoom,"%s-%s-%s"%(str(self.s_year),str(self.s_month),str(self.s_day)),"%s-%s-%s"%(str(self.currentDate[0]),str(self.currentDate[1]), str(self.currentDate[2])))
-            self.tableWidget.setRowCount(len(request))
-            for i in range(0,len(request)):
-                for j in range(0, 8):
-                    if (request[i][j] != None):
-                        newItem = QtWidgets.QTableWidgetItem(str(request[i][j]))
-                        # 设置居中
-                        newItem.setTextAlignment(4 | 8 * 16)
-                        self.tableWidget.setItem(i,j, newItem)
-        # 隐藏每行的表头
-        self.tableWidget.verticalHeader().setVisible(False)
+
         # 写着请求记录的标签
         self.label_3 = QtWidgets.QLabel(self.Report)
         self.label_3.setGeometry(QtCore.QRect(130, 90, 72, 21))
@@ -184,6 +121,73 @@ class Ui_Report(object):
         #self.label.setText(_translate("Report", "开关机次数"))
         #self.label_2.setText(_translate("Report", "总费用"))
         #self.label_3.setText(_translate("Report", "请求记录"))
+
+    #初始化界面数据
+    def iniUiReport(self):
+        # 设置当前时间
+        now = datetime.now()
+        self.currentDate[0] = now.year
+        self.currentDate[1] = now.month
+        self.currentDate[2] = now.day + 1
+        self.s_year = now.year
+        self.s_month = now.month
+        self.s_day = now.day
+        if (self.currentDate[1] == 12 and self.currentDate[2] == 32):
+            self.currentDate[0] = now.year + 1
+            self.currentDate[1] = 1
+            self.currentDate[2] = 1
+        elif (self.currentDate[1] == 2):
+            if (now.year % 4 == 0 and self.currentDate[2] == 30):
+                self.currentDate[1] = 3
+                self.currentDate[2] = 1
+            elif (self.currentDate[2] == 29):
+                self.currentDate[1] = 3
+                self.currentDate[2] = 1
+        elif ((self.currentDate[1] == 4 or self.currentDate[1] == 6 or self.currentDate[1] == 9 or self.currentDate[
+            1] == 11) and self.currentDate[2] == 31):
+            self.currentDate[1] = now.month + 1
+            self.currentDate[2] = 1
+        elif (self.currentDate[2] == 32):
+            self.currentDate[2] = 1
+            self.currentDate[1] = now.month + 1
+
+        #默认房间设置
+        room = Request.getRoomNo(Request())
+        roomLen = len(room)
+        i = 0
+        if (roomLen != 0):
+            self.currentRoom = room[0]
+        while (i < roomLen):
+            self.comboBox.addItem(str(room[0]))
+            self.room[i] = room[0]
+            i = i + 1
+
+        # 设置默认显示时的房间的开机次数
+        if (self.currentRoom != 0):
+            switch_cnt = Request.getSwitchCnt(Request(), self.currentRoom,"%s-%s-%s" % (str(self.s_year), str(self.s_month), str(self.s_day)),"%s-%s-%s" % (str(self.currentDate[0]), str(self.currentDate[1]),str(self.currentDate[2])))
+            self.lineEdit.setText(str(switch_cnt))
+
+        # 设置默认显示时的房间总费用
+        if (self.currentRoom != 0):
+            cost = Request.getCost(Request(), self.currentRoom,"%s-%s-%s" % (str(self.s_year), str(self.s_month), str(self.s_day)), "%s-%s-%s" % (str(self.currentDate[0]), str(self.currentDate[1]), str(self.currentDate[2])))
+            self.lineEdit_2.setText(str(cost))
+
+        # 查询默认显示的房间的所有请求
+        if (self.currentRoom != 0):
+            request = Request.getRequest(Request(), self.currentRoom,
+                                         "%s-%s-%s" % (str(self.s_year), str(self.s_month), str(self.s_day)),
+                                         "%s-%s-%s" % (str(self.currentDate[0]), str(self.currentDate[1]),
+                                                       str(self.currentDate[2])))
+            self.tableWidget.setRowCount(len(request))
+            for i in range(0, len(request)):
+                for j in range(0, 8):
+                    if (request[i][j] != None):
+                        newItem = QtWidgets.QTableWidgetItem(str(request[i][j]))
+                        # 设置居中
+                        newItem.setTextAlignment(4 | 8 * 16)
+                        self.tableWidget.setItem(i, j, newItem)
+        # 隐藏每行的表头
+        self.tableWidget.verticalHeader().setVisible(False)
 
     #更新各项显示
     def updateView(self):

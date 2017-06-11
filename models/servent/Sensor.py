@@ -29,9 +29,9 @@ class Sensor:
         elif(self.servent.sysW==1):
             self.wind_lv = 0.8
         elif(self.servent.sysW==2):
-            self.wind_lv = 1.0
-        elif(self.servent.sysW==3):
             self.wind_lv = 1.3
+        elif(self.servent.sysW==3):
+            self.wind_lv = 1.8
         #根据模式假定风温外温
         if (self.servent.sysModel == 0):#制冷
             self.wind_temp = 18
