@@ -15,6 +15,9 @@ class StatusController:
         #print("set strat as %d"%(self.strat))
         self.new.setStrat(self.strat)
 
+    def changeStatus(self,Model):
+        self.new.setStatu(Model)
+
     def getConnec(self):
         list=self.new.getConnec()
         return list

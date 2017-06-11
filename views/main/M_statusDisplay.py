@@ -50,28 +50,43 @@ class Ui_StatusDisplay(QWidget):
         self.tempLabel.setObjectName("tempLabel")
 
         self.label_2 = QtWidgets.QLabel(self.statusWidget)
-        self.label_2.setGeometry(QtCore.QRect(20, 220, 81, 18))
+        self.label_2.setGeometry(QtCore.QRect(20, 120, 81, 18))
         self.label_2.setObjectName("label_2")
         self.veloLabel=QtWidgets.QLabel(self.statusWidget)
-        self.veloLabel.setGeometry(QtCore.QRect(130, 220, 81, 18))
+        self.veloLabel.setGeometry(QtCore.QRect(130, 120, 81, 18))
         self.veloLabel.setObjectName("veloLabel")
 
         self.label_3 = QtWidgets.QLabel(self.statusWidget)
-        self.label_3.setGeometry(QtCore.QRect(20, 360, 81, 18))
+        self.label_3.setGeometry(QtCore.QRect(20, 250, 81, 18))
         self.label_3.setObjectName("label_3")
-        self.statuLabel = QtWidgets.QLabel(self.statusWidget)
-        self.statuLabel.setGeometry(QtCore.QRect(130, 360, 81, 18))
-        self.statuLabel.setObjectName("statuLabel")
+        self.statuslabel = QtWidgets.QLabel(self.statusWidget)
+        self.statuslabel.setGeometry(QtCore.QRect(100, 250, 81, 18))
+        self.statuslabel.setObjectName("statuslabel")
+        self.modelRadioButton = QtWidgets.QRadioButton(self.statusWidget)
+        self.modelRadioButton.setGeometry(QtCore.QRect(20, 360, 132, 22))
+        self.modelRadioButton.setObjectName("radioButton")
+        self.modelRadioButton.setText("制冷")
+
+        self.modelRadioButton_2 = QtWidgets.QRadioButton(self.statusWidget)
+        self.modelRadioButton_2.setGeometry(QtCore.QRect(150, 360, 132, 22))
+        self.modelRadioButton_2.setObjectName("radioButton_2")
+        self.modelRadioButton_2.setText("制热")
+
+        self.ModelStraconfButton = QtWidgets.QPushButton(self.statusWidget)
+        self.ModelStraconfButton.setGeometry(QtCore.QRect(270, 360, 112, 34))
+        self.ModelStraconfButton.setObjectName("straconfButton")
+        self.ModelStraconfButton.setText("模式修改")
+        self.ModelStraconfButton.clicked.connect(self.on_ModelButton_clicked)
 
         self.roomWidget = QtWidgets.QWidget(self.StatusDisplay)
         self.roomWidget.setGeometry(QtCore.QRect(540, 40, 391, 200))
         self.roomWidget.setObjectName("roomWidget")
 
         self.label_4 = QtWidgets.QLabel(self.roomWidget)
-        self.label_4.setGeometry(QtCore.QRect(30, 30, 141, 21))
+        self.label_4.setGeometry(QtCore.QRect(0, 30, 141, 21))
         self.label_4.setObjectName("label_4")
         self.roomLabel=QtWidgets.QLabel(self.roomWidget)
-        self.roomLabel.setGeometry(QtCore.QRect(200, 80, 100, 100))
+        self.roomLabel.setGeometry(QtCore.QRect(0, 80, 100, 200))
         self.roomLabel.setObjectName("roomLabel")
 
         ##############获取频率——spinbox############
@@ -86,20 +101,32 @@ class Ui_StatusDisplay(QWidget):
 
        # self.freqButton.clicked.connect(self.freqChanged)
         ##############获取策略——RadioButton#################
-        self.radioButton = QtWidgets.QRadioButton(self.StatusDisplay)
-        self.radioButton.setGeometry(QtCore.QRect(540, 280, 132, 22))
+        self.statuWidget = QtWidgets.QWidget(self.StatusDisplay)
+        self.statuWidget.setGeometry(QtCore.QRect(540, 180, 391, 200))
+        self.statuWidget.setObjectName("statuWidget")
+
+        self.label_5 = QtWidgets.QLabel(self.statuWidget)
+        self.label_5.setGeometry(QtCore.QRect(0, 0, 51, 18))
+        self.label_5.setObjectName("label_5")
+        self.label_5.setText("当前策略：")
+        self.stratlabel = QtWidgets.QLabel(self.statuWidget)
+        self.stratlabel.setGeometry(QtCore.QRect(130, 0, 151, 18))
+        self.stratlabel.setObjectName("stratlabel")
+
+        self.radioButton = QtWidgets.QRadioButton(self.statuWidget)
+        self.radioButton.setGeometry(QtCore.QRect(0, 100, 132, 22))
         self.radioButton.setObjectName("radioButton")
 
-        self.radioButton_2 = QtWidgets.QRadioButton(self.StatusDisplay)
-        self.radioButton_2.setGeometry(QtCore.QRect(670, 280, 132, 22))
+        self.radioButton_2 = QtWidgets.QRadioButton(self.statuWidget)
+        self.radioButton_2.setGeometry(QtCore.QRect(130, 100, 132, 22))
         self.radioButton_2.setObjectName("radioButton_2")
 
-        self.radioButton_3 = QtWidgets.QRadioButton(self.StatusDisplay)
-        self.radioButton_3.setGeometry(QtCore.QRect(800, 280, 132, 22))
+        self.radioButton_3 = QtWidgets.QRadioButton(self.statuWidget)
+        self.radioButton_3.setGeometry(QtCore.QRect(260, 100, 132, 22))
         self.radioButton_3.setObjectName("radioButton_3")
 
-        self.straconfButton = QtWidgets.QPushButton(self.StatusDisplay)
-        self.straconfButton.setGeometry(QtCore.QRect(680, 330, 112, 34))
+        self.straconfButton = QtWidgets.QPushButton(self.statuWidget)
+        self.straconfButton.setGeometry(QtCore.QRect(140, 150, 112, 34))
         self.straconfButton.setObjectName("straconfButton")
 
         self.showMes()
@@ -114,7 +141,7 @@ class Ui_StatusDisplay(QWidget):
         QtCore.QMetaObject.connectSlotsByName(self.StatusDisplay)
 
     def on_tellmeButton_clicked(self):
-        print("radio changed")
+        #print("radio changed")
         if (self.radioButton.isChecked()):
             self.controller.strat=1
         if (self.radioButton_2.isChecked()):
@@ -122,6 +149,14 @@ class Ui_StatusDisplay(QWidget):
         if (self.radioButton_3.isChecked()):
             self.controller.strat=3
         self.controller.changeStrat()
+        self.showMes()
+
+    def on_ModelButton_clicked(self):
+        if (self.modelRadioButton.isChecked()):
+            self.controller.changeStatus(0)
+        if (self.modelRadioButton_2.isChecked()):
+            self.controller.changeStatus(1)
+        self.showMes()
 
     def freqChanged(self):
         self.controller.freq=int(self.freqSpinbox.value())
@@ -137,7 +172,7 @@ class Ui_StatusDisplay(QWidget):
         self.freqButton.setText(_translate("StatusDisplay", "确认"))
         self.label.setText(_translate("StatusDisplay", "温度："))
         self.label_2.setText(_translate("StatusDisplay", "风速："))
-        self.label_3.setText(_translate("StatusDisplay", "状态："))
+        self.label_3.setText(_translate("StatusDisplay", "工作模式："))
         self.radioButton.setText(_translate("StatusDisplay", "时间片轮询"))
         self.radioButton_2.setText(_translate("StatusDisplay", "高速风优先"))
         self.radioButton_3.setText(_translate("StatusDisplay", "先来先服务"))
@@ -147,12 +182,17 @@ class Ui_StatusDisplay(QWidget):
         del self.mconnec[:]
         self.controller.getFreq()
         self.controller.getStrat()
+        print("status is ",self.controller.getStatu())
         if(self.controller.getStatu()==0):
             self.mtemp=22.0
-            self.mstatus="制冷"
+            self.modelRadioButton.setChecked(True)
+            self.modelRadioButton_2.setChecked(False)
+            self.statuslabel.setText("制冷")
         else:
             self.mtemp=28.0
-            self.mstatus="制热"
+            self.modelRadioButton.setChecked(False)
+            self.modelRadioButton_2.setChecked(True)
+            self.statuslabel.setText("制热")
 
         self.tempLabel.setText(str(self.mtemp)+'℃')
         if self.mvelocity==0:
@@ -161,7 +201,6 @@ class Ui_StatusDisplay(QWidget):
             self.veloLabel.setText("中速")
         elif self.mvelocity==2:
             self.veloLabel.setText("高速")
-        self.statuLabel.setText(self.mstatus)
 
         self.showCurrentRoom()
         #####刷新测试
@@ -171,14 +210,17 @@ class Ui_StatusDisplay(QWidget):
             self.radioButton.setChecked(True)
             self.radioButton_2.setChecked(False)
             self.radioButton_3.setChecked(False)
+            self.stratlabel.setText("时间片轮询")
         elif self.controller.strat==2:
             self.radioButton.setChecked(False)
             self.radioButton_2.setChecked(True)
             self.radioButton_3.setChecked(False)
+            self.stratlabel.setText("高速风优先抢占")
         elif self.controller.strat==3:
             self.radioButton.setChecked(False)
             self.radioButton_2.setChecked(True)
             self.radioButton_3.setChecked(False)
+            self.stratlabel.setText("先来先服务")
 
         self.freqSpinbox.setValue(self.controller.freq)
 

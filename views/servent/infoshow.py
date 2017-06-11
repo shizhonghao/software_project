@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 #数据类
 from views.servent.figure import Figure_Canvas
 from controller.servent.SBoardControl import S_BoardController
@@ -133,8 +134,15 @@ class Ui_S_Board(QtWidgets.QWidget):
         self.tpre = datetime.now()#用来处理命令发送问题的 待定！！！
 
         self.timer.start()
-
+        self.controller._modelchanged.connect(self.alertModelChange)
         print("success init infoshow")
+
+    def alertModelChange(self):
+        # 根据认证结果弹窗，执行下一步
+        print("to show message box")
+        Message = QMessageBox(self.S_Board)  # 一个消息框
+        # 消息框的类型（内置了五种好像）（本体，标题，正文，按键组）
+        QMessageBox.information(Message, "Message", "目标温度与主机当前工作模式矛盾，已重置", QMessageBox.Ok)
 
 
     def retranslateUi(self, S_Board):

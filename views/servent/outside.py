@@ -12,8 +12,9 @@ from views.servent.S_Cost import Ui_S_Cost
 from views.servent.S_login import Ui_S_Login
 from models.servent import HeartBeat,Sensor
 from models.servent.Servent import S_servent,myroom
+from PyQt5.QtWidgets import QMessageBox,QMainWindow
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -100,6 +101,7 @@ class Ui_MainWindow(object):
         # 信号与槽
         self.InfoShow.clicked.connect(self.infoshow_clk)  # 信息展示
         self.CostShow.clicked.connect(self.costshow_clk)  # 账单展示
+
 
     #关机处理
     #def shutdown_ok(self):
