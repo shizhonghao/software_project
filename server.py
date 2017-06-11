@@ -96,17 +96,6 @@ class communicate(QObject):
             self.parse(str(xml, "utf-8"),conn,addr)
             print("data:", data)
 
-            '''
-            print("in recv")
-            xml_len = int(re.findall('^[0-9]+',data)[0])
-            head_len = int(math.log(xml_len,10))+1
-            xml = data[head_len:head_len+xml_len]
-            print("xml:",xml)
-            self.parse(xml,conn,addr)
-            data = data[head_len+xml_len:].lstrip()
-            print("data:",data)
-            '''
-
     def connection_lost(self,no):
         try:
             soc = self.room_dict[no]
