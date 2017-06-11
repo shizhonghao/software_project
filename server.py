@@ -2,8 +2,7 @@ import socket
 import threading
 import time
 import xml.dom.minidom as Dom
-import re
-import math
+from struct import *
 import sys
 from models.main.UserRecord import UserRecord
 from PyQt5.QtCore import pyqtSignal,QObject
@@ -21,7 +20,7 @@ class communicate(QObject):
     def __init__(self):
         super().__init__()
         self.Freq = 2
-        self.HOST, self.PORT = "192.168.43.80", 9999
+        self.HOST, self.PORT = 'localhost',9999 #"192.168.43.80", 9999
         self.soc = socket.socket()
         self.soc.bind((self.HOST, self.PORT))
         self.soc.listen(10) #max number of clients listening to
@@ -82,38 +81,21 @@ class communicate(QObject):
 
     def recv(self,data,conn,addr):
         print("process:",data)
-        data = data.decode()
         while(data):
             print("in recv")
             if (len(data) < 4):
-                data = data + str(conn.recv(1024), "utf-8")
-                print(len(data))
-            d_len = bytearray(data[0:4].encode('ascii'))
-            print(d_len[0], d_len[1], d_len[2], d_len[3])
-            xml_len = d_len[3] + (d_len[2] << 8) + (d_len[1] << 16) + (d_len[0] << 24)
+                data = data + soc.recv(1024)
+                #print(len(data))
+            xml_len = unpack('!i', data[0:4])[0]
             print("xml_len:", xml_len)
             data = data[4:]
-            # int(re.findall('^[0-9]+', data)[0])
-            # head_len = int(math.log(xml_len, 10)) + 1
             if (len(data) < xml_len):
-                data = data + str(conn.recv(1024), "utf-8")
+                data = data + soc.recv(1024)
             xml = data[:xml_len]
             data = data[xml_len:]
-            # data[head_len:head_len + xml_len]
-            print("xml:", xml)
-            self.parse(xml,conn,addr)
+            print("xml:", str(xml, "utf-8"))
+            self.parse(str(xml, "utf-8"),conn,addr)
             print("data:", data)
-
-            '''
-            print("in recv")
-            xml_len = int(re.findall('^[0-9]+',data)[0])
-            head_len = int(math.log(xml_len,10))+1
-            xml = data[head_len:head_len+xml_len]
-            print("xml:",xml)
-            self.parse(xml,conn,addr)
-            data = data[head_len+xml_len:].lstrip()
-            print("data:",data)
-            '''
 
     def connection_lost(self,no):
         try:
