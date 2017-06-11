@@ -19,7 +19,7 @@ class communicate(QObject):
         print("client")
         #super(QWidget,self).__init__()
         print("client init")
-        self.HOST, self.PORT = "localhost", 9999
+        self.HOST, self.PORT = "192.168.43.234", 9999#"localhost",9999 #
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # Connect to server and send data
         self.sock.connect((self.HOST, self.PORT))
@@ -36,7 +36,7 @@ class communicate(QObject):
         node_Wind.appendChild(doc.createTextNode(str(Wind_Level)))
         root.appendChild(node_Wind)
 
-        self.send(str(len(root.toxml()) + 1) + root.toxml())
+        self.send(root.toxml() + '\n')
 
     def Temp_Submit(self,Time,Client_No,Temp):
         doc = Dom.Document()
@@ -54,9 +54,10 @@ class communicate(QObject):
         node_Temp.appendChild(doc.createTextNode(str(Temp)))
         root.appendChild(node_Temp)
 
-        self.send(str(len(root.toxml()) + 1) + root.toxml())
+        self.send(root.toxml() + '\n')
 
     def Login(self,Name,Password,Client_No):
+        self.Temp_Submit(1,Client_No,25)
         #self._haslogged.emit(1,Name, Password, 1)
         doc = Dom.Document()
         root = doc.createElement("Login")
@@ -73,7 +74,7 @@ class communicate(QObject):
         node_CNO.appendChild(doc.createTextNode(str(Client_No)))
         root.appendChild(node_CNO)
 
-        self.send(str(len(root.toxml()) + 1) + root.toxml())
+        self.send(root.toxml() + '\n')
 
     # ------local setting functions
     def Login_ACK(self,Succeed,Name,Password,Mode):
@@ -115,10 +116,10 @@ class communicate(QObject):
             self.Login_ACK(Succeed,Name,Password,Mode)
 
         if (root.nodeName == "Mode"):
-            node = root.getElementsByTagName("Succeed")
+            node = root.getElementsByTagName("Heater")
             Heater = node[0].childNodes[0].data
 
-            self.Login_ACK(Heater)
+            #self.Login_ACK(Heater)
 
         if (root.nodeName == "Wind"):
             node = root.getElementsByTagName("Level")
@@ -144,20 +145,32 @@ class communicate(QObject):
 
             self.Temp_Submit_Freq(Temp_Submit_Freq)
 
-    def recv(self,data):
-        print("process:", data)
+    def recv(self,data,soc):
+        print("process:", data,len(data))
+        data = data.decode()
         while (data):
             print("in recv")
-            xml_len = int(re.findall('^[0-9]+', data)[0])
-            head_len = int(math.log(xml_len, 10)) + 1
-            xml = data[head_len:head_len + xml_len]
+            if(len(data)<4):
+                data = data + str(soc.recv(1024), "utf-8")
+                print(len(data))
+            d_len = bytearray(data[0:4].encode('ascii'))
+            print(d_len[0],d_len[1],d_len[2],d_len[3])
+            xml_len = d_len[3] + (d_len[2]<<8) + (d_len[1]<<16) + (d_len[0]<<24)
+            print("xml_len:",xml_len)
+            data = data[4:]
+            #int(re.findall('^[0-9]+', data)[0])
+            #head_len = int(math.log(xml_len, 10)) + 1
+            if(len(data) < xml_len):
+                data = data + str(soc.recv(1024), "utf-8")
+            xml = data[:xml_len]
+            data = data[xml_len:]
+                #data[head_len:head_len + xml_len]
             print("xml:", xml)
             self.parse(xml)
-            data = data[1 + head_len + xml_len:]
             print("data:", data)
 
     def send(self, info):
-        self.sock.sendall(bytes(info + "\n", "utf-8"))
+        self.sock.sendall(len(info).to_bytes(4,'big') + bytes(info, "utf-8"))
         print("Sent:     {}".format(info))
 
 
@@ -168,9 +181,9 @@ class client_thread(threading.Thread):
 
     def run(self):
         while(True):
-            data = str(self.client.sock.recv(1024), "utf-8")
+            data = self.client.sock.recv(1024)
             print("Received: {}".format(data))
-            self.client.recv(data)
+            self.client.recv(data,self.client.sock)
             
 c = communicate()
 client_thread(c).start()

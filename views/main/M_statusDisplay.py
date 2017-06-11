@@ -26,7 +26,7 @@ class Ui_StatusDisplay(QWidget):
     def setupUi(self, MainWindow):
         self.reflashTimer = QTimer()
         self.reflashTimer.setInterval(2000)
-        self.reflashTimer.timeout.connect(self.showMes)
+        self.reflashTimer.timeout.connect(self.showCurrentRoom)
         self.reflashTimer.start()
 
         self.StatusDisplay=QWidget(MainWindow)
@@ -78,7 +78,7 @@ class Ui_StatusDisplay(QWidget):
         self.freqSpinbox = QtWidgets.QSpinBox(self.StatusDisplay)
         self.freqSpinbox.setGeometry(QtCore.QRect(550, 400, 80, 40))
         self.freqSpinbox.setObjectName("freqSpinbox")
-        self.freqSpinbox.setRange(50, 100)
+        self.freqSpinbox.setRange(1, 20)
 
         self.freqButton = QtWidgets.QPushButton(self.StatusDisplay)
         self.freqButton.setGeometry(QtCore.QRect(800, 400, 112, 34))
@@ -138,9 +138,9 @@ class Ui_StatusDisplay(QWidget):
         self.label.setText(_translate("StatusDisplay", "温度："))
         self.label_2.setText(_translate("StatusDisplay", "风速："))
         self.label_3.setText(_translate("StatusDisplay", "状态："))
-        self.radioButton.setText(_translate("StatusDisplay", "策略一"))
-        self.radioButton_2.setText(_translate("StatusDisplay", "策略二"))
-        self.radioButton_3.setText(_translate("StatusDisplay", "策略三"))
+        self.radioButton.setText(_translate("StatusDisplay", "时间片轮询"))
+        self.radioButton_2.setText(_translate("StatusDisplay", "高速风优先"))
+        self.radioButton_3.setText(_translate("StatusDisplay", "先来先服务"))
         self.label_4.setText(_translate("StatusDisplay", "当前连接房间："))
 
     def showMes(self):
@@ -163,14 +163,7 @@ class Ui_StatusDisplay(QWidget):
             self.veloLabel.setText("高速")
         self.statuLabel.setText(self.mstatus)
 
-        list=self.controller.getConnec()
-        x=0
-        connecstr=""
-        while x<len(list):
-            connecstr+=str(list[x])
-            connecstr+="\n"
-            x+=1
-        self.roomLabel.setText(connecstr)
+        self.showCurrentRoom()
         #####刷新测试
         #self.roomLabel.setNum(time.clock())
 
@@ -189,4 +182,12 @@ class Ui_StatusDisplay(QWidget):
 
         self.freqSpinbox.setValue(self.controller.freq)
 
-
+    def showCurrentRoom(self):
+        list = self.controller.getConnec()
+        x = 0
+        connecstr = ""
+        while x < len(list):
+            connecstr += str(list[x])
+            connecstr += "\n"
+            x += 1
+        self.roomLabel.setText(connecstr)

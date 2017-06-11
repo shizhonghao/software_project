@@ -11,6 +11,7 @@ class HeartBeat:
     #初始间隔应该是主机的刷新频率
     init_interval = 3000
     cost_interval = 1000#根据需求，从机房间
+    freqChanged = False
 
     def __init__(self,freq):
         #定时器
@@ -21,9 +22,9 @@ class HeartBeat:
 
         #记下作为心跳操作目标的从机状态类
         self.target = queue
-        self.timer.timeout.connect(self.to_servent)
+        self.timer.timeout.connect(lambda:self.to_servent(False))
 
-    def to_servent(self):
+    def to_servent(self,freqChanged):
         toSend=[]
         que_lock.acquire()
         for one in queue:
@@ -45,9 +46,10 @@ class HeartBeat:
 
         for oneroom in toSend:
             server.Fare_Info(oneroom[0],oneroom[1],oneroom[2])
-            server.Temp_Submit_Freq(oneroom[0],self.cost_interval)
+            if(freqChanged == True):
+                server.Temp_Submit_Freq(oneroom[0],self.cost_interval)
 
 
     def changeSubmintFreq(self,freq):
         self.cost_interval = freq
-        self.to_servent()
+        self.to_servent(True)

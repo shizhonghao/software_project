@@ -9,7 +9,8 @@ class ControlPanel(QObject):
     curmonth = int(time.strftime("%m", time.localtime()))
     def __init__(self):
         super().__init__()
-        self.freq=50  ########默认初始值，过后要改
+        self.freq=5  ########默认初始值，过后要改
+        server.freq = 5
         self.strat=1 ######默认初始值，策略
         self.connec=[]  #####当前连接房间
         self.statu=0  ########工作模式，0为制冷，1为制热，默认制冷
@@ -40,6 +41,7 @@ class ControlPanel(QObject):
 ##########根据控制器传的数值设置工作频率#####
     def setFreq(self,freq):
         self.freq=freq
+        server.freq = freq
         print(self.freq)
 ##########根据控制器传的数值设置策略#########
     def setStrat(self,strat):
