@@ -86,7 +86,7 @@ class Ui_StatusDisplay(QWidget):
         self.label_4.setGeometry(QtCore.QRect(0, 30, 141, 21))
         self.label_4.setObjectName("label_4")
         self.roomLabel=QtWidgets.QLabel(self.roomWidget)
-        self.roomLabel.setGeometry(QtCore.QRect(0, 80, 100, 200))
+        self.roomLabel.setGeometry(QtCore.QRect(0, 60, 200, 100))
         self.roomLabel.setObjectName("roomLabel")
 
         ##############获取频率——spinbox############
@@ -230,6 +230,6 @@ class Ui_StatusDisplay(QWidget):
         connecstr = ""
         while x < len(list):
             connecstr += str(list[x])
-            connecstr += "\n"
+            connecstr += "  "
             x += 1
         self.roomLabel.setText(connecstr)

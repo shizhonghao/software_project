@@ -23,16 +23,6 @@ class HeartBeat:
             return
         print("current freq is:",self.current_interval)
         #做状态更新
-        '''
-        2.	温度上报（心跳）（开机时间）
-            Temp_Submit
-            a.	时间
-            Time (yyyy-mm-dd hh:mm:ss) (to be decided later)
-            b.	从机编号
-            Client_No
-            c.	当前室温
-            Temp 
-        '''
         #当前时间
         current_time=time.localtime(time.time())
         #转化为datetime格式
