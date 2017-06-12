@@ -152,14 +152,15 @@ class Ui_Report(object):
             self.currentDate[1] = now.month + 1
 
         #默认房间设置
+        self.comboBox.clear()
         room = Request.getRoomNo(Request())
         roomLen = len(room)
         i = 0
         if (roomLen != 0):
             self.currentRoom = room[0]
         while (i < roomLen):
-            self.comboBox.addItem(str(room[0]))
-            self.room[i] = room[0]
+            self.comboBox.addItem(str(room[i]))
+            self.room[i] = room[i]
             i = i + 1
 
         # 设置默认显示时的房间的开机次数
