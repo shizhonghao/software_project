@@ -77,7 +77,7 @@ class Ui_Report(object):
         # 表格列宽设置
         self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         # 表格列名设置
-        self.tableWidget.setHorizontalHeaderLabels(['房间号', '开始时间', '停止时间', '起始温度', '停止温度', '起始风速', '停止风速', '费用'])
+        self.tableWidget.setHorizontalHeaderLabels(['房间号', '开始时间','起始温度', '起始风速' ,'停止时间',  '停止温度', '停止风速', '费用'])
 
         # 写着请求记录的标签
         self.label_3 = QtWidgets.QLabel(self.Report)
@@ -128,28 +128,10 @@ class Ui_Report(object):
         now = datetime.now()
         self.currentDate[0] = now.year
         self.currentDate[1] = now.month
-        self.currentDate[2] = now.day + 1
+        self.currentDate[2] = now.day
         self.s_year = now.year
         self.s_month = now.month
         self.s_day = now.day
-        if (self.currentDate[1] == 12 and self.currentDate[2] == 32):
-            self.currentDate[0] = now.year + 1
-            self.currentDate[1] = 1
-            self.currentDate[2] = 1
-        elif (self.currentDate[1] == 2):
-            if (now.year % 4 == 0 and self.currentDate[2] == 30):
-                self.currentDate[1] = 3
-                self.currentDate[2] = 1
-            elif (self.currentDate[2] == 29):
-                self.currentDate[1] = 3
-                self.currentDate[2] = 1
-        elif ((self.currentDate[1] == 4 or self.currentDate[1] == 6 or self.currentDate[1] == 9 or self.currentDate[
-            1] == 11) and self.currentDate[2] == 31):
-            self.currentDate[1] = now.month + 1
-            self.currentDate[2] = 1
-        elif (self.currentDate[2] == 32):
-            self.currentDate[2] = 1
-            self.currentDate[1] = now.month + 1
 
         #默认房间设置
         self.comboBox.clear()
@@ -243,28 +225,11 @@ class Ui_Report(object):
             self.s_year = self.currentDate[0]
             self.s_month = self.currentDate[1]
             self.s_day = self.currentDate[2]
-            self.currentDate[2] = self.currentDate[2] + 1
-            if (self.currentDate[1] == 12 and self.currentDate[2] == 32):
-                self.currentDate[0] = self.s_year + 1
-                self.currentDate[1] = 1
-                self.currentDate[2] = 1
-            elif (self.currentDate[1] == 2):
-                if (self.s_year % 4 == 0 and self.currentDate[2] == 30):
-                    self.currentDate[1] = 3
-                    self.currentDate[2] = 1
-                elif (self.currentDate[2] == 29):
-                    self.currentDate[1] = 3
-                    self.currentDate[2] = 1
-            elif ((self.currentDate[1] == 4 or self.currentDate[1] == 6 or self.currentDate[1] == 9 or self.currentDate[1] == 11) and self.currentDate[2] == 31):
-                self.currentDate[1] = self.s_month + 1
-                self.currentDate[2] = 1
-            elif (self.currentDate[2] == 32):
-                self.currentDate[2] = 1
-                self.currentDate[1] = self.s_month + 1
+            self.currentDate[2] = self.currentDate[2]
         elif(self.type == 1):#周报表
             self.s_year = self.currentDate[0]
             self.s_month = self.currentDate[1]
-            self.s_day = self.currentDate[2] - 7
+            self.s_day = self.currentDate[2] - 6
             if(self.s_day <= 0):
                 if(self.s_month == 1):
                     self.s_year = self.s_year - 1

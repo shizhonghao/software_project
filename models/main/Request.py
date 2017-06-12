@@ -99,7 +99,7 @@ class Request:
 
     #得到请求信息
     def getRequest(self,roomNo,sdate,edate):
-        sqlquery = "SELECT * FROM REQUEST WHERE ROOM_NO = %s AND S_TIME BETWEEN '%s 00:00:00' AND '%s 00:00:00'" % (str(roomNo),sdate,edate)
+        sqlquery = "SELECT * FROM REQUEST WHERE ROOM_NO = %s AND S_TIME BETWEEN '%s 00:00:00' AND '%s 23:59:59'" % (str(roomNo),sdate,edate)
         print(sqlquery)
         db_lock.acquire()
         cursor.execute(sqlquery)
