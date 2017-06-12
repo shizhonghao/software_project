@@ -2,7 +2,7 @@
 from client import c
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import pyqtSignal,QObject
-RoomNo = 105
+RoomNo = 3
 class S_LoginController(QObject):
     _haslogged = pyqtSignal(int, str, str, int)
     def __init__(self):

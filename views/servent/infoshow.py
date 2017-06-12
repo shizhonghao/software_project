@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 #数据类
 from views.servent.figure import Figure_Canvas
 from controller.servent.SBoardControl import S_BoardController
@@ -133,9 +134,17 @@ class Ui_S_Board(QtWidgets.QWidget):
         self.tpre = datetime.now()#用来处理命令发送问题的 待定！！！
 
         self.timer.start()
-
+        self.controller._modelchanged.connect(self.alertModelChange)
         print("success init infoshow")
 
+    def alertModelChange(self,reset):
+        # 根据判断结果，决定是否弹窗
+        if reset == True:
+            print("to show message box")
+            Message = QMessageBox()  # 一个消息框
+            # 消息框的类型（内置了五种好像）（本体，标题，正文，按键组）
+            QMessageBox.information(Message, "Message", "主机当前工作模式发生变化，从机已重置", QMessageBox.Ok)
+        self.show()
 
     def retranslateUi(self, S_Board):
         _translate = QtCore.QCoreApplication.translate

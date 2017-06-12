@@ -10,7 +10,7 @@ import datetime
 class Algorithm:
     ##轮转算法用：定时器、时间片大小、起点
     RRtimer = QTimer()
-    RR_interval = 1000#轮转时间片
+    RR_interval = 4000#轮转时间片
     RR_head = 0
     is_RR = False
     algorithm = 1
@@ -32,6 +32,7 @@ class Algorithm:
 
         #保持实例的一致性（因为直接用实例会有访问冲突问题）
         queueMain.update_blowing(roomNo,target[2])
+        print("let roomno %d have wind %d?"%(roomNo,target[2]))
         #向房间发送响应结果
         server.Wind(roomNo,windLev,target[2])
 
@@ -63,10 +64,12 @@ class Algorithm:
 
     def startRR(self):
         self.RRtimer.start()
+        self.is_RR = True
         self.RR_head = 0
 
     def stopRR(self):
         print("RR STop")
+        self.is_RR = False
         self.RRtimer.stop()
 
     def Priority(self):

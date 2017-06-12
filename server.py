@@ -2,8 +2,7 @@ import socket
 import threading
 import time
 import xml.dom.minidom as Dom
-import re
-import math
+from struct import *
 import sys
 from models.main.UserRecord import UserRecord
 from PyQt5.QtCore import pyqtSignal,QObject
@@ -16,6 +15,7 @@ class communicate(QObject):
     _newRequest = pyqtSignal(int,int,int)
     _algorithmActivate=pyqtSignal()
     Model = 1
+    freq = 3
 
     def __init__(self):
         super().__init__()
@@ -81,16 +81,20 @@ class communicate(QObject):
 
     def recv(self,data,conn,addr):
         print("process:",data)
-        data = data.decode()
         while(data):
             print("in recv")
-            xml_len = int(re.findall('^[0-9]+',data)[0])
-            head_len = int(math.log(xml_len,10))+1
-            xml = data[head_len:head_len+xml_len]
-            print("xml:",xml)
-            self.parse(xml,conn,addr)
-            data = data[1+head_len+xml_len:].lstrip()
-            print("data:",data)
+            if (len(data) < 4):
+                data = data + conn.recv(1024)
+            xml_len = unpack('!i',data[0:4])[0]
+            print("xml_len:", xml_len)
+            data = data[4:]
+            if (len(data) < xml_len):
+                data = data + conn.recv(1024)
+            xml = data[:xml_len]
+            data = data[xml_len:]
+            print("xml:", str(xml, "utf-8"))
+            self.parse(str(xml, "utf-8"),conn,addr)
+            print("data:", data)
 
     def connection_lost(self,no):
         try:
@@ -111,14 +115,14 @@ class communicate(QObject):
         if type(no) == str:  # no is a room number
             try:
                 sock = self.room_dict[no][0]
-                sock.sendall(bytes(info + "\n", "utf-8"))
+                sock.sendall(len(info).to_bytes(4,'big') + bytes(info, "utf-8"))
             except:
                 self.connection_lost(no)
                 print(no,"is not connected",sys.exc_info())
         else:  # no is a socket
             try:
                 sock = no
-                sock.sendall(bytes(info + "\n", "utf-8"))
+                sock.sendall(len(info).to_bytes(4,'big') + bytes(info, "utf-8"))
             except:
                 print(no,"connection error")
 
@@ -126,7 +130,7 @@ class communicate(QObject):
         for (conn,addr) in self.socket_list:
             print("send:",info)
             try:
-                conn.sendall(bytes(info,"utf-8"))
+                conn.sendall(len(info).to_bytes(4,'big') + bytes(info, "utf-8"))
             except: #disconnected
                 print("disconnected:",addr)
                 self.socket_list.remove((conn,addr))
@@ -157,7 +161,8 @@ class communicate(QObject):
         node_Mode.appendChild(doc.createTextNode(str(self.Model)))
         root.appendChild(node_Mode)
 
-        self.send(no, str(len(root.toxml()) + 1) + root.toxml())
+        self.send(no, root.toxml() + '\n')
+        self.Temp_Submit_Freq(int(no),self.freq)
 
     def Mode(self,no,Heater):
         doc = Dom.Document()
@@ -167,7 +172,7 @@ class communicate(QObject):
         node_Heater.appendChild(doc.createTextNode(str(Heater)))
         root.appendChild(node_Heater)
 
-        self.send(no, str(len(root.toxml()) + 1) + root.toxml())
+        self.send(no, root.toxml() + '\n')
 
     def Mode_B(self,Heater): #broadcast
         doc = Dom.Document()
@@ -177,9 +182,10 @@ class communicate(QObject):
         node_Heater.appendChild(doc.createTextNode(str(Heater)))
         root.appendChild(node_Heater)
 
-        self.broadcast(str(len(root.toxml()) + 1) + root.toxml())
+        self.broadcast(root.toxml() + '\n')
 
     def Wind(self,no,Level,Start_Blowing):
+        print("send wind %d %d"%(Level,Start_Blowing))
         doc = Dom.Document()
         root = doc.createElement("Wind")
 
@@ -191,7 +197,7 @@ class communicate(QObject):
         node_Blow.appendChild(doc.createTextNode(str(Start_Blowing)))
         root.appendChild(node_Blow)
 
-        self.send(no, str(len(root.toxml()) + 1) + root.toxml())
+        self.send(no, root.toxml() + '\n')
 
     def Fare_Info(self,no,Fare,Energy):
         doc = Dom.Document()
@@ -205,7 +211,7 @@ class communicate(QObject):
         node_Energy.appendChild(doc.createTextNode(str(Energy)))
         root.appendChild(node_Energy)
 
-        self.send(no, str(len(root.toxml()) + 1) + root.toxml())
+        self.send(no, root.toxml() + '\n')
 
     def Temp_Submit_Freq(self,no,Temp_Submit_Freq):
         doc = Dom.Document()
@@ -215,7 +221,7 @@ class communicate(QObject):
         node_Freq.appendChild(doc.createTextNode(str(Temp_Submit_Freq)))
         root.appendChild(node_Freq)
 
-        self.send(no, str(len(root.toxml()) + 1) + root.toxml())
+        self.send(no, root.toxml() + '\n')
 
     def Temp_Submit_Freq_B(self,Temp_Submit_Freq): #broadcast
         doc = Dom.Document()
@@ -225,7 +231,7 @@ class communicate(QObject):
         node_Freq.appendChild(doc.createTextNode(str(Temp_Submit_Freq)))
         root.appendChild(node_Freq)
 
-        self.broadcast(str(len(root.toxml()) + 1) + root.toxml())
+        self.broadcast(root.toxml() + '\n')
 
 class receiver_thread(threading.Thread):
     def __init__(self,conn,addr):

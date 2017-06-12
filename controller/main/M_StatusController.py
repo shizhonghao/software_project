@@ -2,7 +2,7 @@
 from models.main.ControlPanel import ControlPanel
 
 class StatusController:
-    freq = 50  ########默认初始值，过后要改
+    freq = 5  ########默认初始值，过后要改
     strat = 1  ######默认初始值，策略
     def __init__(self):
         self.new=ControlPanel()
@@ -14,6 +14,9 @@ class StatusController:
     def changeStrat(self):
         #print("set strat as %d"%(self.strat))
         self.new.setStrat(self.strat)
+
+    def changeStatus(self,Model):
+        self.new.setStatu(Model)
 
     def getConnec(self):
         list=self.new.getConnec()
