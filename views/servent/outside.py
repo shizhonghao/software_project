@@ -81,10 +81,10 @@ class Ui_MainWindow(QMainWindow):
 
     # 登录成功后，创建心跳类，还有传感器！！（因为传感器的时间间隔是恒定的）
     # 可能还要在这里创建从机类。。
-    def logged(self,Name,Password,Mode):
+    def logged(self,roomNo,Name,Password,Mode):
         # 初始化一个servent,修改py文件中的单例指向这个实例
-        myroom = S_servent(Name,Password,Mode)
-        print(myroom.usr)
+        myroom = S_servent(roomNo,Name,Password,Mode)
+        print(myroom)
         self.heart.setServent(myroom)
         self.sensor = Sensor.Sensor(myroom)
         # 新建信息显示界面

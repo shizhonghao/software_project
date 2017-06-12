@@ -2,12 +2,11 @@
 
 from  datetime  import  *
 from S_DBFacade import db_lock,cursor,db
-from controller.servent.S_LoginController import RoomNo
 myroom = object
 
 class S_servent :
-    def __init__(self,U,P,M):
-        self.roomNo = RoomNo  #这个地方的默认数据记得修改呀！！！！
+    def __init__(self,R,U,P,M):
+        self.roomNo = R  #这个地方的默认数据记得修改呀！！！！
         self.targetT = 28.0
         self.targetW = 3
         self.sysT = 20.0

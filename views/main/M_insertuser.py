@@ -23,16 +23,22 @@ class Ui_insertusr(object):
         self.label_2 = QtWidgets.QLabel(self.insertusr)
         self.label_2.setGeometry(QtCore.QRect(250, 200, 80, 20))
         self.label_2.setObjectName("label_2")
+        self.label_3 = QtWidgets.QLabel(self.insertusr)
+        self.label_3.setGeometry(QtCore.QRect(250, 280, 80, 20))
+        self.label_3.setObjectName("label_3")
 
+        self.roomNoEdit = QtWidgets.QLineEdit(self.insertusr)
+        self.roomNoEdit.setGeometry(QtCore.QRect(360, 110, 350, 30))
+        self.roomNoEdit.setObjectName("roomNoEdit")
         self.nameEdit = QtWidgets.QLineEdit(self.insertusr)
-        self.nameEdit.setGeometry(QtCore.QRect(360, 110, 350, 30))
+        self.nameEdit.setGeometry(QtCore.QRect(360, 190, 350, 30))
         self.nameEdit.setObjectName("nameEdit")
         self.pwdEdit = QtWidgets.QLineEdit(self.insertusr)
-        self.pwdEdit.setGeometry(QtCore.QRect(360, 190, 350, 30))
+        self.pwdEdit.setGeometry(QtCore.QRect(360, 270, 350, 30))
         self.pwdEdit.setObjectName("pwdEdit")
 
         self.ensureButton = QtWidgets.QPushButton(self.insertusr)
-        self.ensureButton.setGeometry(QtCore.QRect(430, 300, 112, 34))
+        self.ensureButton.setGeometry(QtCore.QRect(430, 330, 112, 34))
         self.ensureButton.setObjectName("ensureButton")
         self.ensureButton.clicked.connect(self.insertUser)
 
@@ -42,23 +48,26 @@ class Ui_insertusr(object):
     def retranslateUi(self, insertusr):
         _translate = QtCore.QCoreApplication.translate
         insertusr.setWindowTitle(_translate("insertusr", "Form"))
-        self.label.setText(_translate("insertusr", "用户名："))
-        self.label_2.setText(_translate("insertusr", "身份证号："))
+        self.label.setText(_translate("insertusr", "房间号："))
+        self.label_2.setText(_translate("insertusr", "用户名："))
+        self.label_3.setText(_translate("insertusr", "身份证号："))
         self.ensureButton.setText(_translate("insertusr", "确认"))
 
     def insertUser(self):
         # 取输入的用户名与密码
+        roomNo = self.roomNoEdit.text()
         userName = self.nameEdit.text()
         passwd = self.pwdEdit.text()
 
         # 调用控制器的登录认证函数
         controller=M_insertUserController.InsertUserController()
-        print("haha")
-        message=controller.insert(userName,passwd)
+        print(roomNo,userName,passwd)
+        message=controller.insert(roomNo,userName,passwd)
 
         # 根据认证结果弹窗，执行下一步
         Message = QMessageBox()  # 一个消息框
         # 消息框的类型（内置了五种好像）（本体，标题，正文，按键组）
         QMessageBox.information(Message, "Message",message, QMessageBox.Ok)
+        self.roomNoEdit.clear()
         self.nameEdit.clear()
         self.pwdEdit.clear()

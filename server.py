@@ -39,10 +39,12 @@ class communicate(QObject):
         self._updateTemp.emit(int(Client_No),float(Temp))
 
     def Login(self,Name,Password,Client_No,conn,addr):
-        self.room_dict[Client_No] = (conn,addr)
-        self.socket_dict[(conn, addr)] = Client_No
-        print(Client_No,"in dict")
-        self.log.Check(Client_No,Name,Password)
+        res = self.log.Check(Client_No, Name, Password)
+        if res == True:
+            self.room_dict[Client_No] = (conn,addr)
+            self.socket_dict[(conn, addr)] = Client_No
+            print(Client_No,"in dict")
+
 
     #------info processing functions
     def parse(self,xml,conn,addr):
