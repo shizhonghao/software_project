@@ -20,10 +20,16 @@ class Ui_Report(object):
     s_month = 0
     s_day = 0
     def setupUi(self, MainWidow):
-        self.Report=QWidget(MainWidow)
+        self.Report = QWidget(MainWidow)
         self.Report.setObjectName("Report")
-        self.Report.resize(990, 500)
-        self.Report.setGeometry(QtCore.QRect(30, 30, 990, 500))
+        self.Report.resize(1200, 590)
+        self.Report.setGeometry(QtCore.QRect(0, 70, 1200, 590))
+        jpeg = QtGui.QPixmap()
+        jpeg.load("pictures/ReportBg.png")
+        palette1 = QtGui.QPalette()
+        palette1.setBrush(self.Report.backgroundRole(), QtGui.QBrush(jpeg))
+        self.Report.setPalette(palette1);
+        self.Report.setAutoFillBackground(True)
 
         '''
         self.reportWidget = QtWidgets.QWidget(self.centralwidget)
@@ -31,44 +37,46 @@ class Ui_Report(object):
         self.reportWidget.setObjectName("reportWidget")
         '''
 
-        self.labeltest2 = QtWidgets.QLabel(self.Report)
-        self.labeltest2.setGeometry(QtCore.QRect(20, 30, 81, 18))
-        self.labeltest2.setObjectName("labeltest2")
+        # self.labeltest2 = QtWidgets.QLabel(self.Report)
+        # self.labeltest2.setGeometry(QtCore.QRect(20, 30, 81, 18))
+        # self.labeltest2.setObjectName("labeltest2")
 
         self.retranslateUi(self.Report)
         QtCore.QMetaObject.connectSlotsByName(self.Report)
 
         # 时间控件的初始化
         self.dateEdit = QtWidgets.QDateEdit(self.Report)
-        self.dateEdit.setGeometry(QtCore.QRect(20, 20, 110, 22))
+        self.dateEdit.setGeometry(QtCore.QRect(100, 100, 112, 34))
         self.dateEdit.setDateTime(QtCore.QDateTime.currentDateTime())
 
         # 关于房号下拉菜单的初始化
         self.comboBox = QtWidgets.QComboBox(self.Report)
-        self.comboBox.setGeometry(QtCore.QRect(20, 60, 87, 22))
+        self.comboBox.setGeometry(QtCore.QRect(100, 150, 112, 34))
         self.comboBox.setObjectName("comboBox")
 
         # 写开机次数的标签
         self.label = QtWidgets.QLabel(self.Report)
-        self.label.setGeometry(QtCore.QRect(130, 60, 81, 21))
-        self.label.setText("开机次数")
+        self.label.setGeometry(QtCore.QRect(500, 150, 112, 34))
+        self.label.setStyleSheet("QLabel{color:rgb(91,155,213);font: 75 12pt \"微软雅黑\";}")
+        self.label.setText("开机次数:")
         # 显示开关机次数的格子
         self.lineEdit = QtWidgets.QLineEdit(self.Report)
-        self.lineEdit.setGeometry(QtCore.QRect(220, 60, 51, 21))
+        self.lineEdit.setGeometry(QtCore.QRect(630, 150, 60, 34))
         self.lineEdit.setObjectName("lineEdit")
 
         # 写着总费用的标签
         self.label_2 = QtWidgets.QLabel(self.Report)
-        self.label_2.setGeometry(QtCore.QRect(310, 60, 72, 21))
-        self.label_2.setText("总费用")
+        self.label_2.setGeometry(QtCore.QRect(870, 150, 100, 34))
+        self.label_2.setText("总费用:")
+        self.label_2.setStyleSheet("QLabel{color:rgb(91,155,213);font: 75 12pt \"微软雅黑\";}")
         # 显示总费用的格子
         self.lineEdit_2 = QtWidgets.QLineEdit(self.Report)
-        self.lineEdit_2.setGeometry(QtCore.QRect(370, 60, 61, 21))
+        self.lineEdit_2.setGeometry(QtCore.QRect(970, 150, 60, 34))
         self.lineEdit_2.setObjectName("lineEdit_2")
 
         # 用来放所有的记录的表格
         self.tableWidget = QtWidgets.QTableWidget(self.Report)
-        self.tableWidget.setGeometry(QtCore.QRect(130, 120, 700, 200))
+        self.tableWidget.setGeometry(QtCore.QRect(100,250, 1000, 250))
         self.tableWidget.setObjectName("tableWidget")
         # 设置对用户只读
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -83,17 +91,33 @@ class Ui_Report(object):
         self.label_3 = QtWidgets.QLabel(self.Report)
         self.label_3.setGeometry(QtCore.QRect(130, 90, 72, 21))
         self.label_3.setObjectName("label_3")
+        self.label_3.setStyleSheet("QLabel{color:rgb(91,155,213);font: 75 12pt \"微软雅黑\";}")
 
         # 选择报表类型的按钮
         self.pushButton = QtWidgets.QPushButton(self.Report)
-        self.pushButton.setGeometry(150, 10, 93, 28)
-        self.pushButton.setText("日报表")
+        self.pushButton.setGeometry(375, 100, 112, 34)
+        # self.pushButton.setText("日报表")
+        self.pushButton.setStyleSheet(
+            "QPushButton{border-style:outset;border-radius: 10px;border-color: beige;font: bold 14px;}"
+            "QPushButton{background-image: url(pictures/dayReport.png);}"
+            "QPushButton:hover{background-image: url(pictures/dayReport.png);}"
+            "QPushButton:pressed{background-image: url(pictures/dayReport3.png);}")
         self.pushButton_1 = QtWidgets.QPushButton(self.Report)
-        self.pushButton_1.setGeometry(280, 10, 93, 28)
-        self.pushButton_1.setText("周报表")
+        self.pushButton_1.setGeometry(650, 100, 112, 34)
+        # self.pushButton_1.setText("周报表")
+        self.pushButton_1.setStyleSheet(
+            "QPushButton{border-style:outset;border-radius: 10px;border-color: beige;font: bold 14px;}"
+            "QPushButton{background-image: url(pictures/weekReport.png);}"
+            "QPushButton:hover{background-image: url(pictures/weekReport.png);}"
+            "QPushButton:pressed{background-image: url(pictures/weekReport3.png);}")
         self.pushButton_2 = QtWidgets.QPushButton(self.Report)
-        self.pushButton_2.setGeometry(410, 10, 93, 28)
-        self.pushButton_2.setText("月报表")
+        self.pushButton_2.setGeometry(925, 100, 112, 34)
+        # self.pushButton_2.setText("月报表")
+        self.pushButton_2.setStyleSheet(
+            "QPushButton{border-style:outset;border-radius: 10px;border-color: beige;font: bold 14px;}"
+            "QPushButton{background-image: url(pictures/monthReport.png);}"
+            "QPushButton:hover{background-image: url(pictures/monthReport.png);}"
+            "QPushButton:pressed{background-image: url(pictures/monthReport3.png);}")
 
         '''
         MainWindow.setCentralWidget(self.centralwidget)
@@ -117,7 +141,7 @@ class Ui_Report(object):
     def retranslateUi(self, Report):
         _translate = QtCore.QCoreApplication.translate
         Report.setWindowTitle(_translate("Report", "Form"))
-        self.labeltest2.setText(_translate("Report", "报表界面"))
+        # self.labeltest2.setText(_translate("Report", "报表界面"))
         #self.label.setText(_translate("Report", "开关机次数"))
         #self.label_2.setText(_translate("Report", "总费用"))
         #self.label_3.setText(_translate("Report", "请求记录"))
