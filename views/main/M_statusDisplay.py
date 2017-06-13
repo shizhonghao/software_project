@@ -76,13 +76,13 @@ class Ui_StatusDisplay(QWidget):
         self.modelRadioButton.setGeometry(QtCore.QRect(75, 260, 132, 34))
         self.modelRadioButton.setObjectName("radioButton")
         self.modelRadioButton.setText("制冷")
-        self.modelRadioButton.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 8pt \"微软雅黑\";}")
+        self.modelRadioButton.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 9pt \"微软雅黑\";}")
 
         self.modelRadioButton_2 = QtWidgets.QRadioButton(self.StatusDisplay)
         self.modelRadioButton_2.setGeometry(QtCore.QRect(235, 260, 132, 34))
         self.modelRadioButton_2.setObjectName("radioButton_2")
         self.modelRadioButton_2.setText("制热")
-        self.modelRadioButton_2.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 8pt \"微软雅黑\";}")
+        self.modelRadioButton_2.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 9pt \"微软雅黑\";}")
 
         self.ModelStraconfButton = QtWidgets.QPushButton(self.StatusDisplay)
         self.ModelStraconfButton.setGeometry(QtCore.QRect(400, 260, 112, 34))
@@ -109,9 +109,10 @@ class Ui_StatusDisplay(QWidget):
 
         ##############获取频率——spinbox############
         self.freqSpinbox = QtWidgets.QSpinBox(self.StatusDisplay)
-        self.freqSpinbox.setGeometry(QtCore.QRect(155, 120, 80, 40))
+        self.freqSpinbox.setGeometry(QtCore.QRect(145, 120, 100, 40))
         self.freqSpinbox.setObjectName("freqSpinbox")
         self.freqSpinbox.setRange(1, 20)
+        self.freqSpinbox.setStyleSheet("border-radius:3px;padding:2px 4px;background-color: rgb(91,155,213,190);color:rgb(255,255,255);font: 8pt '微软雅黑'}")
 
         self.freqButton = QtWidgets.QPushButton(self.StatusDisplay)
         self.freqButton.setGeometry(QtCore.QRect(330, 123, 112, 34))
@@ -132,17 +133,17 @@ class Ui_StatusDisplay(QWidget):
         self.radioButton = QtWidgets.QRadioButton(self.StatusDisplay)
         self.radioButton.setGeometry(QtCore.QRect(75, 410, 132, 22))
         self.radioButton.setObjectName("radioButton")
-        self.radioButton.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 8pt \"微软雅黑\";}")
+        self.radioButton.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 9pt \"微软雅黑\";}")
 
         self.radioButton_2 = QtWidgets.QRadioButton(self.StatusDisplay)
         self.radioButton_2.setGeometry(QtCore.QRect(235, 410, 132, 22))
         self.radioButton_2.setObjectName("radioButton_2")
-        self.radioButton_2.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 8pt \"微软雅黑\";}")
+        self.radioButton_2.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 9pt \"微软雅黑\";}")
 
         self.radioButton_3 = QtWidgets.QRadioButton(self.StatusDisplay)
         self.radioButton_3.setGeometry(QtCore.QRect(395, 410, 132, 22))
         self.radioButton_3.setObjectName("radioButton_3")
-        self.radioButton_3.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 8pt \"微软雅黑\";}")
+        self.radioButton_3.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 9pt \"微软雅黑\";}")
 
         self.stratLabel = QtWidgets.QLabel(self.StatusDisplay)
         self.stratLabel.setGeometry(QtCore.QRect(220, 331, 200, 40))
