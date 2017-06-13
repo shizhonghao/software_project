@@ -39,10 +39,11 @@ class communicate(QObject):
         self._updateTemp.emit(int(Client_No),float(Temp))
 
     def Login(self,Name,Password,Client_No,conn,addr):
-        self.room_dict[Client_No] = (conn,addr)
-        self.socket_dict[(conn, addr)] = Client_No
         print(Client_No,"in dict")
         res = self.log.Check(Client_No, Name, Password)
+        if res:
+            self.room_dict[Client_No] = (conn,addr)
+            self.socket_dict[(conn, addr)] = Client_No
 
 
     #------info processing functions
@@ -116,7 +117,8 @@ class communicate(QObject):
         if type(no) == str:  # no is a room number
             try:
                 sock = self.room_dict[no][0]
-                sock.sendall(len(info).to_bytes(4,'big') + bytes(info, "utf-8"))
+                bytes_send = bytes(info, "utf-8")
+                sock.sendall(len(bytes_send).to_bytes(4,'big') + bytes_send)
             except:
                 self.connection_lost(no)
                 print(no,"is not connected",sys.exc_info())
