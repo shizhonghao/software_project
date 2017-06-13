@@ -75,7 +75,7 @@ class Ui_Report(object):
         self.label_2.setStyleSheet("QLabel{color:rgb(91,155,213);font: 75 12pt \"微软雅黑\";}")
         # 显示总费用的格子
         self.lineEdit_2 = QtWidgets.QLineEdit(self.Report)
-        self.lineEdit_2.setGeometry(QtCore.QRect(970, 165, 60, 34))
+        self.lineEdit_2.setGeometry(QtCore.QRect(970, 165, 110, 34))
         self.lineEdit_2.setObjectName("lineEdit_2")
         self.lineEdit_2.setStyleSheet("border-radius:3px;padding:2px 4px;"
                                       "background-color: rgb(91,155,213,190);color:rgb(255,255,255);font: 10pt '微软雅黑'}")
@@ -217,7 +217,7 @@ class Ui_Report(object):
 
         # 更新开销
         cost = Request.getCost(Request(), self.currentRoom,"%s-%s-%s" % (str(self.s_year), str(self.s_month), str(self.s_day)), "%s-%s-%s" % (str(self.currentDate[0]), str(self.currentDate[1]), str(self.currentDate[2])))
-        self.lineEdit_2.setText(str(cost))
+        self.lineEdit_2.setText("%.2f"%(cost))
 
         # 更新请求
         request = Request.getRequest(Request(), self.currentRoom,"%s-%s-%s" % (str(self.s_year), str(self.s_month), str(self.s_day)), "%s-%s-%s" % (str(self.currentDate[0]), str(self.currentDate[1]), str(self.currentDate[2])))
@@ -226,7 +226,11 @@ class Ui_Report(object):
         for i in range(0,len(request)):
             for j in range(0, 8):
                 if (request[i][j] != None):
-                    newItem = QtWidgets.QTableWidgetItem(str(request[i][j]))
+                    try:
+                        num = float(str(request[i][j]))
+                        newItem = QtWidgets.QTableWidgetItem(str("%.2f"%(num)))
+                    except:
+                        newItem = QtWidgets.QTableWidgetItem(str(request[i][j]))
                     # 设置居中
                     newItem.setTextAlignment(4 | 8 * 16)
                     self.tableWidget.setItem(i, j, newItem)

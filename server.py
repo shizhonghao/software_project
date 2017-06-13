@@ -39,11 +39,10 @@ class communicate(QObject):
         self._updateTemp.emit(int(Client_No),float(Temp))
 
     def Login(self,Name,Password,Client_No,conn,addr):
+        self.room_dict[Client_No] = (conn,addr)
+        self.socket_dict[(conn, addr)] = Client_No
+        print(Client_No,"in dict")
         res = self.log.Check(Client_No, Name, Password)
-        if res == True:
-            self.room_dict[Client_No] = (conn,addr)
-            self.socket_dict[(conn, addr)] = Client_No
-            print(Client_No,"in dict")
 
 
     #------info processing functions
@@ -90,7 +89,7 @@ class communicate(QObject):
             xml_len = unpack('!i',data[0:4])[0]
             print("xml_len:", xml_len)
             data = data[4:]
-            if (len(data) < xml_len):
+            while (len(data) < xml_len):
                 data = data + conn.recv(1024)
             xml = data[:xml_len]
             data = data[xml_len:]
