@@ -21,7 +21,7 @@ class Ui_MainWindow(QMainWindow):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         jpeg = QtGui.QPixmap()
-        jpeg.load("pictures/servent/底层背景.png")
+        jpeg.load("pictures/servent/底层背景.jpg")
         palette1 = QtGui.QPalette()
         palette1.setBrush(self.centralwidget.backgroundRole(), QtGui.QBrush(jpeg))
         self.centralwidget.setPalette(palette1);
@@ -35,7 +35,7 @@ class Ui_MainWindow(QMainWindow):
         self.closeWidget = QtWidgets.QWidget(MainWindow)
         self.closeWidget.resize(1200, 750)
         jpeg = QtGui.QPixmap()
-        jpeg.load("pictures/servent/关机界面.png")
+        jpeg.load("pictures/servent/关机界面.jpg")
         palette1 = QtGui.QPalette()
         palette1.setBrush(self.closeWidget.backgroundRole(), QtGui.QBrush(jpeg))
         self.closeWidget.setPalette(palette1)
@@ -52,7 +52,7 @@ class Ui_MainWindow(QMainWindow):
             "QPushButton:pressed{background-image: url(pictures/servent/CloseButton3.png);}")
 
         self.InfoShow = QtWidgets.QPushButton(self.centralwidget)
-        self.InfoShow.setGeometry(QtCore.QRect(500, 660, 50, 90))
+        self.InfoShow.setGeometry(QtCore.QRect(450, 660, 50, 90))
         self.InfoShow.setObjectName("InfoShow")
         self.InfoShow.setStyleSheet(
             "QPushButton{border-style:outset;border-radius: 10px;border-color: beige;font: bold 14px;}"
@@ -62,7 +62,7 @@ class Ui_MainWindow(QMainWindow):
         self.InfoShow.setEnabled(False)
 
         self.CostShow = QtWidgets.QPushButton(self.centralwidget)
-        self.CostShow.setGeometry(QtCore.QRect(700, 660, 50, 90))
+        self.CostShow.setGeometry(QtCore.QRect(750, 660, 50, 90))
         self.CostShow.setObjectName("CostShow")
         self.CostShow.setStyleSheet(
             "QPushButton{border-style:outset;border-radius: 10px;border-color: beige;font: bold 14px;}"
@@ -73,11 +73,11 @@ class Ui_MainWindow(QMainWindow):
 
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(550, 0, 100, 50))
-        self.label.setStyleSheet("font: 75 20pt \"微软雅黑\";")
+        self.label.setStyleSheet("font: 75 20pt \"微软雅黑\";color:rgb(150,179,205)")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
-        pe = QtGui.QPalette()
-        pe.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)  # 设置字体颜色
-        self.label.setPalette(pe)
+        # pe = QtGui.QPalette()
+        # pe.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)  # 设置字体颜色
+        # self.label.setPalette(pe)
         self.label.setObjectName("label")
 
         MainWindow.setCentralWidget(self.centralwidget)
