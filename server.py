@@ -39,11 +39,14 @@ class communicate(QObject):
         self._updateTemp.emit(int(Client_No),float(Temp))
 
     def Login(self,Name,Password,Client_No,conn,addr):
-        print(Client_No,"in dict")
-        res = self.log.Check(Client_No, Name, Password)
-        if res:
+        if Name in self.room_dict.keys():
+            print("重复登入")
+            self.Login_ACK(conn,0,Name,Password)
+        else:
             self.room_dict[Client_No] = (conn,addr)
             self.socket_dict[(conn, addr)] = Client_No
+            print(Client_No,"in dict")
+            res = self.log.Check(Client_No, Name, Password)
 
 
     #------info processing functions
