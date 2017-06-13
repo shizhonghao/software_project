@@ -19,6 +19,11 @@ class Ui_SubMonitor(object):
         self.sub = M_SubStatusController.SubStatuController()
 
     def setupUi(self, MainWindow):
+        self.reflashTimer = QTimer()
+        self.reflashTimer.setInterval(2000)
+        self.reflashTimer.timeout.connect(self.updateData)
+        self.reflashTimer.start()
+
         self.SubMonitor = QWidget(MainWindow)
         self.SubMonitor.setObjectName("SubMonitor")
         self.SubMonitor.resize(1200, 590)

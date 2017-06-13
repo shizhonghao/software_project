@@ -39,11 +39,15 @@ class communicate(QObject):
         self._updateTemp.emit(int(Client_No),float(Temp))
 
     def Login(self,Name,Password,Client_No,conn,addr):
-        res = self.log.Check(Client_No, Name, Password)
-        if res == True:
+        if Client_No in self.room_dict.keys():
+            print("重复登入")
+            self.Login_ACK(conn,0,Name,Password)
+        else:
             self.room_dict[Client_No] = (conn,addr)
             self.socket_dict[(conn, addr)] = Client_No
             print(Client_No,"in dict")
+            res = self.log.Check(Client_No, Name, Password)
+
 
 
     #------info processing functions
@@ -90,7 +94,7 @@ class communicate(QObject):
             xml_len = unpack('!i',data[0:4])[0]
             print("xml_len:", xml_len)
             data = data[4:]
-            if (len(data) < xml_len):
+            while (len(data) < xml_len):
                 data = data + conn.recv(1024)
             xml = data[:xml_len]
             data = data[xml_len:]
@@ -117,14 +121,16 @@ class communicate(QObject):
         if type(no) == str:  # no is a room number
             try:
                 sock = self.room_dict[no][0]
-                sock.sendall(len(info).to_bytes(4,'big') + bytes(info, "utf-8"))
+                bytes_send = bytes(info, "utf-8")
+                sock.sendall(len(bytes_send).to_bytes(4,'big') + bytes_send)
             except:
                 self.connection_lost(no)
                 print(no,"is not connected",sys.exc_info())
         else:  # no is a socket
             try:
                 sock = no
-                sock.sendall(len(info).to_bytes(4,'big') + bytes(info, "utf-8"))
+                bytes_send = bytes(info, "utf-8")
+                sock.sendall(len(bytes_send).to_bytes(4,'big') + bytes_send)
             except:
                 print(no,"connection error")
 
@@ -165,6 +171,10 @@ class communicate(QObject):
 
         self.send(no, root.toxml() + '\n')
         self.Temp_Submit_Freq(int(no),self.freq)
+        if Succeed == 0:
+            soc = self.room_dict[no]
+            del self.room_dict[no]
+            del self.socket_dict[soc]
 
     def Mode(self,no,Heater):
         doc = Dom.Document()

@@ -164,7 +164,8 @@ class communicate(QObject):
             print("data:", data)
 
     def send(self, info):
-        self.sock.sendall(len(info).to_bytes(4,'big') + bytes(info, "utf-8"))
+        bytes_send = bytes(info, "utf-8")
+        self.sock.sendall(len(bytes_send).to_bytes(4,'big') + bytes_send)
         print("Sent:     {}".format(info))
 
 

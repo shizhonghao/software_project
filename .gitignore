@@ -5,4 +5,5 @@
 test.py
 
 static
+.idea
 *.xml
