@@ -7,12 +7,14 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QCoreApplication
 from views.servent.infoshow import Ui_S_Board
 from views.servent.S_Cost import Ui_S_Cost
 from views.servent.S_login import Ui_S_Login
 from models.servent import HeartBeat,Sensor
 from models.servent.Servent import S_servent,myroom
 from PyQt5.QtWidgets import QMessageBox,QMainWindow
+from client import c
 
 class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
@@ -123,8 +125,16 @@ class Ui_MainWindow(QMainWindow):
 
     #关机请求
     def shutdown_request(self):
-        print("shurdown_request")
+        print("shutdown_request")
         self.closeWidget.show()
+        try:
+            self.heart.timerStop()
+            self.sensor.timerStop()
+            self.boardwidget.timer.stop()
+            c.closeCon()
+        except:
+            print("未登入")
+        #QCoreApplication.instance().quit()
         #与主机通信
 
     # 登录成功后，创建心跳类，还有传感器！！（因为传感器的时间间隔是恒定的）

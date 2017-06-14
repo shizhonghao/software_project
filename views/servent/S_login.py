@@ -30,9 +30,9 @@ class Ui_S_Login(QWidget):
         jpeg = QtGui.QPixmap()
         jpeg.load("pictures/servent/LoginBg.jpg")
         palette1 = QtGui.QPalette()
-        palette1.setBrush(self.S_Board.backgroundRole(), QtGui.QBrush(jpeg))
-        self.S_Board.setPalette(palette1)
-        self.S_Board.setAutoFillBackground(True)
+        palette1.setBrush(self.Form.backgroundRole(), QtGui.QBrush(jpeg))
+        self.Form.setPalette(palette1)
+        self.Form.setAutoFillBackground(True)
 
         #标题栏
         # self.label = QtWidgets.QLabel(self.Form)

@@ -168,6 +168,9 @@ class communicate(QObject):
         self.sock.sendall(len(bytes_send).to_bytes(4,'big') + bytes_send)
         print("Sent:     {}".format(info))
 
+    def closeCon(self):
+        self.sock.shutdown(socket.SHUT_RDWR)
+        self.sock.close()
 
 class client_thread(threading.Thread):
     def __init__(self,client):
@@ -178,7 +181,10 @@ class client_thread(threading.Thread):
         while(True):
             data = self.client.sock.recv(1024)
             print("Received: {}".format(data))
-            self.client.recv(data,self.client.sock)
+            try:
+                self.client.recv(data,self.client.sock)
+            except:
+                print("连接已断开")
             
 c = communicate()
 client_thread(c).start()

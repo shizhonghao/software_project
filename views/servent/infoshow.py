@@ -129,7 +129,7 @@ class Ui_S_Board(QtWidgets.QWidget):
         # self.rtlabel.setPalette(pe)
         # self.rtlabel.setObjectName("rtlabel")
         self.rtshow = QtWidgets.QLabel(self.S_Board)
-        self.rtshow.setGeometry(QtCore.QRect(100,150,150,100))
+        self.rtshow.setGeometry(QtCore.QRect(90,150,180,100))
         self.rtshow.setStyleSheet("font: 75 24pt \"微软雅黑\";")
         # self.windlabel.setAlignment(QtCore.Qt.AlignCenter)
         pe = QtGui.QPalette()
@@ -263,7 +263,7 @@ class Ui_S_Board(QtWidgets.QWidget):
         self.getCurrentState() #更新数据
         print("painting")
         self.dr.test(self.sysT,self.targetT)
-        self.rtshow.setText("%.2f度" % self.sysT)
+        self.rtshow.setText("%.2f℃" % self.sysT)
         if(self.sysModel == 1):
             index_temp=self.dtshow_hot.findText('%d' % int(self.targetT))
             self.dtshow_hot.setCurrentIndex(index_temp)

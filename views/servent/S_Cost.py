@@ -24,9 +24,9 @@ class Ui_S_Cost(QWidget):
         jpeg = QtGui.QPixmap()
         jpeg.load("pictures/servent/消费背景.jpg")
         palette1 = QtGui.QPalette()
-        palette1.setBrush(self.S_Board.backgroundRole(), QtGui.QBrush(jpeg))
-        self.S_Cost.setPalette(palette1)
-        self.S_Cost.setAutoFillBackground(True)
+        palette1.setBrush(self.Form.backgroundRole(), QtGui.QBrush(jpeg))
+        self.Form.setPalette(palette1)
+        self.Form.setAutoFillBackground(True)
 
         #################消费结果展示界面￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
         self.displayborad = QtWidgets.QWidget(self.Form)
