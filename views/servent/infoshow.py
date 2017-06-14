@@ -30,7 +30,7 @@ class Ui_S_Board(QtWidgets.QWidget):
         self.S_Board.setAutoFillBackground(True)
 
         self.windshow = QtWidgets.QComboBox(self.S_Board)
-        self.windshow.setGeometry(QtCore.QRect(350, 420, 110, 30))
+        self.windshow.setGeometry(QtCore.QRect(350, 430, 110, 30))
         self.windshow.setStyleSheet("border-radius:3px;padding:2px 4px;"
                                        "background-color: rgb(91,155,213,190);"
                                        "color:rgb(255,255,255);font: 9pt '微软雅黑'}")
@@ -41,7 +41,7 @@ class Ui_S_Board(QtWidgets.QWidget):
 
 
         self.windstate = QtWidgets.QLabel(self.S_Board)    #当前状态
-        self.windstate.setGeometry(QtCore.QRect(1000, 90, 150, 50))
+        self.windstate.setGeometry(QtCore.QRect(1000, 70, 150, 50))
         self.windstate.setStyleSheet("font: 75 12pt \"微软雅黑\";")
         # self.windlabel.setAlignment(QtCore.Qt.AlignCenter)
         pe = QtGui.QPalette()
@@ -95,7 +95,7 @@ class Ui_S_Board(QtWidgets.QWidget):
         # self.dtlabel.setPalette(pe)
         # self.dtlabel.setObjectName("dtlabel")
         self.dtshow_cold = QtWidgets.QComboBox(self.S_Board)
-        self.dtshow_cold.setGeometry(QtCore.QRect(350, 170, 110, 30))
+        self.dtshow_cold.setGeometry(QtCore.QRect(350, 180, 110, 30))
         self.dtshow_cold.setStyleSheet("border-radius:3px;padding:2px 4px;"
                                        "background-color: rgb(91,155,213,190);"
                                        "color:rgb(255,255,255);font: 9pt '微软雅黑'}")
@@ -108,7 +108,7 @@ class Ui_S_Board(QtWidgets.QWidget):
         self.dtshow_cold.addItem("19")
         self.dtshow_cold.addItem("18")
         self.dtshow_hot = QtWidgets.QComboBox(self.S_Board)
-        self.dtshow_hot.setGeometry(QtCore.QRect(350, 170, 110, 30))
+        self.dtshow_hot.setGeometry(QtCore.QRect(350, 180, 110, 30))
         self.dtshow_hot.setStyleSheet("border-radius:3px;padding:2px 4px;"
                                        "background-color: rgb(91,155,213,190);"
                                        "color:rgb(255,255,255);font: 9pt '微软雅黑'}")
@@ -148,7 +148,7 @@ class Ui_S_Board(QtWidgets.QWidget):
         # self.modellabel.setPalette(pe)
         # self.modellabel.setObjectName("modellabel")
         self.modelshow = QtWidgets.QLabel(self.S_Board)
-        self.modelshow.setGeometry(QtCore.QRect(710, 90, 100, 50))
+        self.modelshow.setGeometry(QtCore.QRect(710, 70, 100, 50))
         self.modelshow.setStyleSheet("font: 75 12pt \"微软雅黑\";")
         # self.windlabel.setAlignment(QtCore.Qt.AlignCenter)
         pe = QtGui.QPalette()
