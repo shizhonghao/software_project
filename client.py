@@ -13,16 +13,22 @@ class communicate(QObject):
     temp_freq_change = pyqtSignal(int)
     fare_info_change = pyqtSignal(float,float)
     _model_change = pyqtSignal(int)
+    _connectFailed = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         print("client")
         #super(QWidget,self).__init__()
         print("client init")
-        self.HOST, self.PORT = "localhost", 9999#"localhost",9999 #
+        self.HOST, self.PORT = "10.201.17.162", 9999#"localhost",9999 #
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # Connect to server and send data
-        self.sock.connect((self.HOST, self.PORT))
+        try:
+            self.sock.connect((self.HOST, self.PORT))
+            self.hasconnect = True
+        except:
+            self.connectFailed()
+            print("主机未上线")
 
     def AC_Req(self,Positive,Wind_Level):
         doc = Dom.Document() 
@@ -165,8 +171,29 @@ class communicate(QObject):
 
     def send(self, info):
         bytes_send = bytes(info, "utf-8")
-        self.sock.sendall(len(bytes_send).to_bytes(4,'big') + bytes_send)
+        try:
+            self.sock.sendall(len(bytes_send).to_bytes(4,'big') + bytes_send)
+        except:
+            pass
         print("Sent:     {}".format(info))
+
+    def closeCon(self):
+        self.sock.shutdown(socket.SHUT_RDWR)
+        self.sock.close()
+
+    def connectFailed(self):
+        self.hasconnect = False
+        self._connectFailed.emit()
+
+    def reconnect(self):
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((self.HOST, self.PORT))
+            self.hasconnect = True
+            client_thread(c).start()
+        except:
+            self.connectFailed()
+            print("主机未上线")
 
 
 class client_thread(threading.Thread):
@@ -175,10 +202,16 @@ class client_thread(threading.Thread):
         self.client = client
 
     def run(self):
-        while(True):
-            data = self.client.sock.recv(1024)
-            print("Received: {}".format(data))
-            self.client.recv(data,self.client.sock)
+        connectAlive = True
+        while(connectAlive):
+            try:
+                data = self.client.sock.recv(1024)
+                print("Received: {}".format(data))
+                self.client.recv(data,self.client.sock)
+            except:
+                connectAlive = False
+                self.client.connectFailed()
+                print("连接已断开")
             
 c = communicate()
 client_thread(c).start()

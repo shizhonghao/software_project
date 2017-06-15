@@ -42,3 +42,6 @@ class HeartBeat:
 
     def setServent(self,target):
         self.target = target
+
+    def timerStop(self):
+        self.timer.stop()
