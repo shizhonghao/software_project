@@ -105,6 +105,9 @@ class Ui_MainWindow(QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.heart = HeartBeat.HeartBeat()
 
+        c._connectFailed.connect(self.connectFailed)
+
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -165,5 +168,17 @@ class Ui_MainWindow(QMainWindow):
         self.label.setText(str(roomNo))
         self.InfoShow.setEnabled(True)
         self.CostShow.setEnabled(True)
+
+    def connectFailed(self):
+        try:
+            myroom.start_blowing = 0
+        except:
+            print("myroom not set")
+        Message = QMessageBox()  # 一个消息框
+        button =  QMessageBox.information(Message, "Message","与主机建立连接失败，是否重试？", QMessageBox.Cancel|QMessageBox.Ok)
+        if button == QMessageBox.Cancel:
+            self.shutdown_request()
+        elif button == QMessageBox.Ok:
+            c.reconnect()
     #关机处理
     #def shutdown_ok(self):

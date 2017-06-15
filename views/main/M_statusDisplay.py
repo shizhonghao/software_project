@@ -46,7 +46,7 @@ class Ui_StatusDisplay(QWidget):
         self.tempLabel.setStyleSheet("QLabel{color:rgb(255,255,255);font: 75 30pt \"微软雅黑\";}")
 
         self.veloLabel = QtWidgets.QLabel(self.StatusDisplay)
-        self.veloLabel.setGeometry(QtCore.QRect(950, 150, 130, 90))
+        self.veloLabel.setGeometry(QtCore.QRect(950, 150, 150, 90))
         self.veloLabel.setObjectName("veloLabel")
         self.veloLabel.setStyleSheet("QLabel{color:rgb(255,255,255);font: 75 24pt \"微软雅黑\";}")
 
@@ -131,6 +131,7 @@ class Ui_StatusDisplay(QWidget):
         self.radioButton_3.setGeometry(QtCore.QRect(320, 0, 132, 22))
         self.radioButton_3.setObjectName("radioButton_3")
         self.radioButton_3.setStyleSheet("QRadioButton{color:rgb(255,255,255);font: 75 9pt \"微软雅黑\";}")
+        self.radioButton_3.hide()
 
         self.stratLabel = QtWidgets.QLabel(self.StatusDisplay)
         self.stratLabel.setGeometry(QtCore.QRect(220, 331, 200, 40))
@@ -213,13 +214,6 @@ class Ui_StatusDisplay(QWidget):
             self.statuLabel.setText("制热")
 
         self.tempLabel.setText(str(self.mtemp)+'℃')
-        if self.mvelocity==0:
-            self.veloLabel.setText("低速")
-        elif self.mvelocity==1:
-            self.veloLabel.setText("中速")
-        elif self.mvelocity==2:
-            self.veloLabel.setText("高速")
-
         self.showCurrentRoom()
         #####刷新测试
         #self.roomLabel.setNum(time.clock())
@@ -255,3 +249,8 @@ class Ui_StatusDisplay(QWidget):
                 connecstr += "\t"
             x += 1
         self.roomLabel.setText(connecstr)
+
+        if connecstr == "":
+            self.veloLabel.setText("待机中")
+        else:
+            self.veloLabel.setText("工作中")
